@@ -61,7 +61,7 @@ lower_load_input_to_scalar(nir_builder *b, nir_intrinsic_instr *intr)
       nir_intrinsic_set_dest_type(chan_intr, nir_intrinsic_dest_type(intr));
       set_io_semantics(chan_intr, intr, i);
       /* offset */
-      nir_src_copy(&chan_intr->src[0], &intr->src[0], chan_intr);
+      nir_src_copy(&chan_intr->src[0], &intr->src[0], &chan_intr->instr);
 
       nir_builder_instr_insert(b, &chan_intr->instr);
 
@@ -167,7 +167,7 @@ lower_store_output_to_scalar(nir_builder *b, nir_intrinsic_instr *intr)
       /* value */
       chan_intr->src[0] = nir_src_for_ssa(nir_channel(b, value, i));
       /* offset */
-      nir_src_copy(&chan_intr->src[1], &intr->src[1], chan_intr);
+      nir_src_copy(&chan_intr->src[1], &intr->src[1], &chan_intr->instr);
 
       nir_builder_instr_insert(b, &chan_intr->instr);
    }
