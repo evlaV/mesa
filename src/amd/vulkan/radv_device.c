@@ -568,6 +568,8 @@ radv_physical_device_get_supported_extensions(const struct radv_physical_device 
       .GOOGLE_hlsl_functionality1 = true,
       .GOOGLE_user_type = true,
       .NV_compute_shader_derivatives = true,
+      .NV_device_generated_commands = device->rad_info.chip_class >= GFX7 && !(device->instance->debug_flags & RADV_DEBUG_NO_IBS) &&
+                                      driQueryOptionb(&device->instance->dri_options, "radv_dgc"),
       .NV_mesh_shader = device->use_ngg && device->rad_info.chip_class >= GFX10_3 &&
                         device->instance->perftest_flags & RADV_PERFTEST_NV_MS && !device->use_llvm,
       /* Undocumented extension purely for vkd3d-proton. This check is to prevent anyone else from
@@ -971,6 +973,7 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_RADV_DISABLE_HTILE_LAYERS(false)
       DRI_CONF_RADV_DISABLE_ANISO_SINGLE_LEVEL(false)
       DRI_CONF_RADV_DISABLE_SINKING_LOAD_INPUT_FS(false)
+      DRI_CONF_RADV_DGC(false)
    DRI_CONF_SECTION_END
 };
 // clang-format on
@@ -1730,6 +1733,12 @@ radv_GetPhysicalDeviceFeatures2(VkPhysicalDevice physicalDevice,
          features->depthClipControl = true;
          break;
       }
+      case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_FEATURES_NV: {
+         VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV *features =
+            (VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV *)ext;
+         features->deviceGeneratedCommands = true;
+         break;
+      }
       default:
          break;
       }
@@ -2412,6 +2421,24 @@ radv_GetPhysicalDeviceProperties2(VkPhysicalDevice physicalDevice,
          properties->meshOutputPerPrimitiveGranularity = 1;
          properties->meshOutputPerVertexGranularity = 1;
 
+         break;
+      }
+      case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_PROPERTIES_NV: {
+         VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV *properties =
+            (VkPhysicalDeviceDeviceGeneratedCommandsPropertiesNV *)ext;
+         properties->maxIndirectCommandsStreamCount = 1;
+         properties->maxIndirectCommandsStreamStride = UINT32_MAX;
+         properties->maxIndirectCommandsTokenCount = UINT32_MAX;
+         properties->maxIndirectCommandsTokenOffset = UINT16_MAX;
+         properties->minIndirectCommandsBufferOffsetAlignment = 4;
+         properties->minSequencesCountBufferOffsetAlignment = 4;
+         properties->minSequencesIndexBufferOffsetAlignment = 4;
+
+         /* Don't support even a shader group count = 1 until we support shader
+          * overrides during pipeline creation. */
+         properties->maxGraphicsShaderGroupCount = 0;
+
+         properties->maxIndirectSequenceCount = UINT32_MAX;
          break;
       }
       default:
