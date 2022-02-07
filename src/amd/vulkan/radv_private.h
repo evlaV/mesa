@@ -1619,7 +1619,8 @@ bool radv_cmd_buffer_upload_data(struct radv_cmd_buffer *cmd_buffer, unsigned si
                                  const void *data, unsigned *out_offset);
 
 void radv_write_vertex_descriptors(const struct radv_cmd_buffer *cmd_buffer,
-                                   const struct radv_pipeline *pipeline, void *vb_ptr);
+                                   const struct radv_pipeline *pipeline,
+                                   bool full_null_descriptors, void *vb_ptr);
 
 void radv_cmd_buffer_clear_subpass(struct radv_cmd_buffer *cmd_buffer);
 void radv_cmd_buffer_resolve_subpass(struct radv_cmd_buffer *cmd_buffer);
