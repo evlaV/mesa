@@ -3135,6 +3135,7 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
    bool image_float32_atomics = false;
    bool vs_prologs = false;
    bool global_bo_list = false;
+   bool use_dgc = false;
 
    /* Check enabled features */
    if (pCreateInfo->pEnabledFeatures) {
@@ -3201,6 +3202,12 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
             global_bo_list = true;
          break;
       }
+      case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_FEATURES_NV: {
+         const VkPhysicalDeviceDeviceGeneratedCommandsFeaturesNV *features = (const void *)ext;
+         if (features->deviceGeneratedCommands)
+            use_dgc = true;
+         break;
+      }
       default:
          break;
       }
@@ -3262,6 +3269,8 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
    device->attachment_vrs_enabled = attachment_vrs_enabled;
 
    device->image_float32_atomics = image_float32_atomics;
+
+   device->uses_device_generated_commands = use_dgc;
 
    radv_init_shader_arenas(device);
 
@@ -5062,11 +5071,25 @@ static void
 radv_get_buffer_memory_requirements(struct radv_device *device,
                                     VkDeviceSize size,
                                     VkBufferCreateFlags flags,
+                                    VkBufferUsageFlags usage,
                                     VkMemoryRequirements2 *pMemoryRequirements)
 {
    pMemoryRequirements->memoryRequirements.memoryTypeBits =
       ((1u << device->physical_device->memory_properties.memoryTypeCount) - 1u) &
       ~device->physical_device->memory_types_32bit;
+   
+   /* Allow 32-bit address-space for DGC usage, as this buffer will contain
+    * cmd buffer upload buffers, and those get passed to shaders through 32-bit
+    * pointers.
+    *
+    * We only allow it with this usage set, to "protect" the 32-bit address space
+    * from being overused. The actual requirement is done as part of
+    * vkGetGeneratedCommandsMemoryRequirementsNV. (we have to make sure their
+    * intersection is non-zero at least)
+    */
+   if ((usage & VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT) && device->uses_device_generated_commands)
+      pMemoryRequirements->memoryRequirements.memoryTypeBits |=
+         device->physical_device->memory_types_32bit;
 
    if (flags & VK_BUFFER_CREATE_SPARSE_BINDING_BIT)
       pMemoryRequirements->memoryRequirements.alignment = 4096;
@@ -5098,7 +5121,7 @@ radv_GetBufferMemoryRequirements2(VkDevice _device, const VkBufferMemoryRequirem
    RADV_FROM_HANDLE(radv_device, device, _device);
    RADV_FROM_HANDLE(radv_buffer, buffer, pInfo->buffer);
 
-   radv_get_buffer_memory_requirements(device, buffer->size, buffer->flags, pMemoryRequirements);
+   radv_get_buffer_memory_requirements(device, buffer->size, buffer->flags, buffer->usage, pMemoryRequirements);
 }
 
 VKAPI_ATTR void VKAPI_CALL
@@ -5109,7 +5132,7 @@ radv_GetDeviceBufferMemoryRequirements(VkDevice _device,
    RADV_FROM_HANDLE(radv_device, device, _device);
 
    radv_get_buffer_memory_requirements(device, pInfo->pCreateInfo->size, pInfo->pCreateInfo->flags,
-                                       pMemoryRequirements);
+                                       pInfo->pCreateInfo->usage, pMemoryRequirements);
 }
 
 VKAPI_ATTR void VKAPI_CALL

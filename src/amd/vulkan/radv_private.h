@@ -887,6 +887,8 @@ struct radv_device {
 
    /* Whether per-vertex VRS is forced. */
    bool force_vrs_enabled;
+
+   bool uses_device_generated_commands;
 };
 
 struct radv_device_memory {
