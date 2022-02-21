@@ -178,6 +178,7 @@ struct loader_dri3_drawable {
    bool block_on_depleted_buffers;
    bool queries_buffer_age;
    int swap_interval;
+   int orig_swap_interval;
 
    struct loader_dri3_extensions *ext;
    const struct loader_dri3_vtable *vtable;

@@ -29,6 +29,7 @@ if with_platform_x11 and with_dri3
     dependencies : [
       dep_libdrm, dep_xcb_dri3, dep_xcb_present, dep_xcb_sync, dep_xshmfence,
       dep_xcb_xfixes,
+      dep_xcb_xfixes, dep_xcb_xrandr, idep_mesautil
     ],
     build_by_default : false,
   )
