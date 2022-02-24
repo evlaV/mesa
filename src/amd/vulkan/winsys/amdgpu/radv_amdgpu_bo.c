@@ -42,8 +42,6 @@
 #include "util/u_math.h"
 #include "util/u_memory.h"
 
-static void radv_amdgpu_winsys_bo_destroy(struct radeon_winsys *_ws, struct radeon_winsys_bo *_bo);
-
 static int
 radv_amdgpu_bo_va_op(struct radv_amdgpu_winsys *ws, amdgpu_bo_handle bo, uint64_t offset,
                      uint64_t size, uint64_t addr, uint32_t bo_flags, uint64_t internal_flags,
@@ -308,10 +306,9 @@ radv_amdgpu_global_bo_list_del(struct radv_amdgpu_winsys *ws, struct radv_amdgpu
 }
 
 static void
-radv_amdgpu_winsys_bo_destroy(struct radeon_winsys *_ws, struct radeon_winsys_bo *_bo)
+radv_amdgpu_winsys_bo_destroy(struct radv_amdgpu_winsys *ws,
+                              struct radv_amdgpu_winsys_bo *bo)
 {
-   struct radv_amdgpu_winsys *ws = radv_amdgpu_winsys(_ws);
-   struct radv_amdgpu_winsys_bo *bo = radv_amdgpu_winsys_bo(_bo);
 
    radv_amdgpu_log_bo(ws, bo, true);
 
@@ -348,6 +345,46 @@ radv_amdgpu_winsys_bo_destroy(struct radeon_winsys *_ws, struct radeon_winsys_bo
    FREE(bo);
 }
 
+bool
+radv_amdgpu_winsys_destroy_free_bos(struct radv_amdgpu_winsys *ws)
+{
+   bool progress = false;
+   simple_mtx_lock(&ws->free_list_lock);
+   list_for_each_entry_safe (struct radv_amdgpu_winsys_bo, bo, &ws->free_list, free_list) {
+      list_del(&bo->free_list);
+      ws->free_list_memory -= bo->size;
+      radv_amdgpu_winsys_bo_destroy(ws, bo);
+      progress = true;
+   }
+   simple_mtx_unlock(&ws->free_list_lock);
+   return progress;
+}
+
+static void
+radv_amdgpu_winsys_bo_destroy_or_cache(struct radeon_winsys *_ws, struct radeon_winsys_bo *_bo)
+{
+   struct radv_amdgpu_winsys *ws = radv_amdgpu_winsys(_ws);
+   struct radv_amdgpu_winsys_bo *bo = radv_amdgpu_winsys_bo(_bo);
+
+   bool free_list_eligible = !bo->is_virtual && bo->free_list_eligible;
+
+   if (free_list_eligible) {
+      double total_memory = ws->allocated_vram + ws->allocated_vram_vis + ws->allocated_gtt;
+
+      if (ws->free_list_memory >= total_memory * 0.02)
+         free_list_eligible = false;
+   }
+
+   if (free_list_eligible) {
+      simple_mtx_lock(&ws->free_list_lock);
+      list_add(&bo->free_list, &ws->free_list);
+      ws->free_list_memory += bo->size;
+      simple_mtx_unlock(&ws->free_list_lock);
+   } else {
+      radv_amdgpu_winsys_bo_destroy(ws, bo);
+   }
+}
+
 static VkResult
 radv_amdgpu_winsys_bo_create(struct radeon_winsys *_ws, uint64_t size, unsigned alignment,
                              enum radeon_bo_domain initial_domain, enum radeon_bo_flag flags,
@@ -368,14 +405,54 @@ radv_amdgpu_winsys_bo_create(struct radeon_winsys *_ws, uint64_t size, unsigned 
     */
    *out_bo = NULL;
 
+   unsigned virt_alignment = MAX2(4096, alignment);
+   if (size >= ws->info.pte_fragment_size)
+      virt_alignment = MAX2(virt_alignment, ws->info.pte_fragment_size);
+
+   size = align_u64(size, virt_alignment);
+
+   bool free_list_eligible = false;
+   if ((ws->perftest & RADV_PERFTEST_BO_CACHE) && (flags & RADEON_FLAG_NO_INTERPROCESS_SHARING) &&
+       !(flags & RADEON_FLAG_VIRTUAL) && !(flags & RADEON_FLAG_REPLAYABLE) && (flags & RADEON_FLAG_BO_CACHE)) {
+      /* These bounds are mostly to divide the buffers into a very discrete set of buckets. I chose
+       * 2M as an inflection point to stop going to the next power of two because the memory
+       * overhead of that can grow very large. I just chose this because this tends to be hugepage
+       * size, but there is no solid data for any of it. */
+      if (size >= 2 * 1024 * 1024 && alignment <= 1024 * 1024) {
+         alignment = 1024 * 1024;
+         virt_alignment = MAX2(alignment, ws->info.pte_fragment_size);
+         size = align_u64(size, MAX2(2 * 1024 * 1024, virt_alignment));
+         free_list_eligible = true;
+      } else if (alignment <= 65536) {
+         virt_alignment = alignment = MIN2(size, 65536);
+         size = align_u64(util_next_power_of_two(size), virt_alignment);
+         free_list_eligible = true;
+      }
+   }
+
+   if (free_list_eligible) {
+      simple_mtx_lock(&ws->free_list_lock);
+      list_for_each_entry_safe(struct radv_amdgpu_winsys_bo, free_bo, &ws->free_list, free_list)
+      {
+         if (free_bo->size == size && free_bo->base.initial_domain == initial_domain &&
+             free_bo->alloc_flags == flags) {
+            list_del(&free_bo->free_list);
+            ws->free_list_memory -= free_bo->size;
+            simple_mtx_unlock(&ws->free_list_lock);
+
+            free_bo->priority = priority;
+
+            *out_bo = &free_bo->base;
+            return VK_SUCCESS;
+         }
+      }
+      simple_mtx_unlock(&ws->free_list_lock);
+   }
+
    bo = CALLOC_STRUCT(radv_amdgpu_winsys_bo);
    if (!bo) {
       return VK_ERROR_OUT_OF_HOST_MEMORY;
    }
-
-   unsigned virt_alignment = alignment;
-   if (size >= ws->info.pte_fragment_size)
-      virt_alignment = MAX2(virt_alignment, ws->info.pte_fragment_size);
 
    assert(!replay_address || (flags & RADEON_FLAG_REPLAYABLE));
 
@@ -480,6 +557,13 @@ radv_amdgpu_winsys_bo_create(struct radeon_winsys *_ws, uint64_t size, unsigned 
    }
 
    r = amdgpu_bo_alloc(ws->dev, &request, &buf_handle);
+
+   if (r) {
+      /* Try a second time to allocate by seeing if we can free some stuff first */
+      if (radv_amdgpu_winsys_destroy_free_bos(ws))
+         r = amdgpu_bo_alloc(ws->dev, &request, &buf_handle);
+   }
+
    if (r) {
       fprintf(stderr, "amdgpu: Failed to allocate a buffer:\n");
       fprintf(stderr, "amdgpu:    size      : %" PRIu64 " bytes\n", size);
@@ -499,6 +583,8 @@ radv_amdgpu_winsys_bo_create(struct radeon_winsys *_ws, uint64_t size, unsigned 
    bo->base.initial_domain = initial_domain;
    bo->base.use_global_list = bo->base.is_local;
    bo->priority = priority;
+   bo->alloc_flags = flags;
+   bo->free_list_eligible = free_list_eligible;
 
    r = amdgpu_bo_export(buf_handle, amdgpu_bo_handle_type_kms, &bo->bo_handle);
    assert(!r);
@@ -1040,7 +1126,7 @@ void
 radv_amdgpu_bo_init_functions(struct radv_amdgpu_winsys *ws)
 {
    ws->base.buffer_create = radv_amdgpu_winsys_bo_create;
-   ws->base.buffer_destroy = radv_amdgpu_winsys_bo_destroy;
+   ws->base.buffer_destroy = radv_amdgpu_winsys_bo_destroy_or_cache;
    ws->base.buffer_map = radv_amdgpu_winsys_bo_map;
    ws->base.buffer_unmap = radv_amdgpu_winsys_bo_unmap;
    ws->base.buffer_from_ptr = radv_amdgpu_winsys_bo_from_ptr;
