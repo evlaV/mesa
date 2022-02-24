@@ -572,4 +572,8 @@
   DRI_CONF_OPT_B(radv_disable_aniso_single_level, def, \
                  "Disable anisotropic filtering for single level images")
 
+#define DRI_CONF_RADV_BO_CACHE(def) \
+   DRI_CONF_OPT_B(radv_bo_cache, def, \
+                  "Enable a BO cache to avoid allocating/freeing buffers")
+
 #endif
