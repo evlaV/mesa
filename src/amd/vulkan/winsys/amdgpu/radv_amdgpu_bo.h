@@ -50,6 +50,10 @@ struct radv_amdgpu_winsys_bo {
       struct {
          amdgpu_bo_handle bo;
          uint32_t bo_handle;
+
+         bool free_list_eligible;
+         struct list_head free_list;
+         enum radeon_bo_flag alloc_flags;
       };
       /* virtual bo */
       struct {
@@ -71,5 +75,7 @@ radv_amdgpu_winsys_bo(struct radeon_winsys_bo *bo)
 }
 
 void radv_amdgpu_bo_init_functions(struct radv_amdgpu_winsys *ws);
+
+bool radv_amdgpu_winsys_destroy_free_bos(struct radv_amdgpu_winsys *ws);
 
 #endif /* RADV_AMDGPU_BO_H */

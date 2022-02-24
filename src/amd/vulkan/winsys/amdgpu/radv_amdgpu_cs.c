@@ -248,7 +248,7 @@ radv_amdgpu_cs_create(struct radeon_winsys *ws, enum ring_type ring_type)
       VkResult result =
          ws->buffer_create(ws, ib_size, 0, radv_amdgpu_cs_domain(ws),
                            RADEON_FLAG_CPU_ACCESS | RADEON_FLAG_NO_INTERPROCESS_SHARING |
-                              RADEON_FLAG_READ_ONLY | RADEON_FLAG_GTT_WC,
+                              RADEON_FLAG_READ_ONLY | RADEON_FLAG_GTT_WC | RADEON_FLAG_BO_CACHE,
                            RADV_BO_PRIORITY_CS, 0, &cs->ib_buffer);
       if (result != VK_SUCCESS) {
          free(cs);
@@ -390,7 +390,7 @@ radv_amdgpu_cs_grow(struct radeon_cmdbuf *_cs, size_t min_size)
    VkResult result =
       cs->ws->base.buffer_create(&cs->ws->base, ib_size, 0, radv_amdgpu_cs_domain(&cs->ws->base),
                                  RADEON_FLAG_CPU_ACCESS | RADEON_FLAG_NO_INTERPROCESS_SHARING |
-                                    RADEON_FLAG_READ_ONLY | RADEON_FLAG_GTT_WC,
+                                    RADEON_FLAG_READ_ONLY | RADEON_FLAG_GTT_WC | RADEON_FLAG_BO_CACHE,
                                  RADV_BO_PRIORITY_CS, 0, &cs->ib_buffer);
 
    if (result != VK_SUCCESS) {
@@ -1796,6 +1796,14 @@ radv_amdgpu_cs_submit(struct radv_amdgpu_ctx *ctx, struct radv_amdgpu_cs_request
    }
 
    r = amdgpu_cs_submit_raw2(ctx->ws->dev, ctx->ctx, bo_list, num_chunks, chunks, &request->seq_no);
+
+   if (r == -ENOMEM) {
+      /* Try again with all the buffers in the free list actually freed, so if we failed because of
+       * memory or placement issues we have a chance of still succeeding. */
+      if (radv_amdgpu_winsys_destroy_free_bos(ctx->ws))
+         r = amdgpu_cs_submit_raw2(ctx->ws->dev, ctx->ctx, bo_list, num_chunks, chunks,
+                                   &request->seq_no);
+   }
 
    if (r) {
       if (r == -ENOMEM) {
