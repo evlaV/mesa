@@ -912,7 +912,6 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_RADV_NO_DYNAMIC_BOUNDS(false)
       DRI_CONF_RADV_ABSOLUTE_DEPTH_BIAS(false)
       DRI_CONF_RADV_OVERRIDE_UNIFORM_OFFSET_ALIGNMENT(0)
-      DRI_CONF_RADV_BO_CACHE(false)
    DRI_CONF_SECTION_END
 
    DRI_CONF_SECTION_DEBUG
@@ -966,9 +965,6 @@ radv_init_dri_options(struct radv_instance *instance)
 
    if (driQueryOptionb(&instance->dri_options, "radv_disable_dcc"))
       instance->debug_flags |= RADV_DEBUG_NO_DCC;
-
-   if (driQueryOptionb(&instance->dri_options, "radv_bo_cache"))
-      instance->perftest_flags |= RADV_PERFTEST_BO_CACHE;
 
    instance->report_apu_as_dgpu =
       driQueryOptionb(&instance->dri_options, "radv_report_apu_as_dgpu");
