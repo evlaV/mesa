@@ -527,3 +527,9 @@ option(
   value : 'disabled',
   description : 'Build the intel-clc compiler (required for ray queries).'
 )
+option(
+  'radv-build-id',
+  type : 'string',
+  value : '',
+  description : 'Override build id for shader cache keys (hex string). Can be extracted with readelf -x .note.gnu.build-id'
+)
