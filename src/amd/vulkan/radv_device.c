@@ -110,6 +110,8 @@ parse_hex(char *out, const char *in, unsigned length)
    }
 }
 
+#define RADV_BUILD_ID_OVERRIDE "bd508805963f5a490c00fc542600da885ece1941"
+
 static int
 radv_device_get_cache_uuid(struct radv_physical_device *pdevice, void *uuid)
 {
