@@ -1460,14 +1460,20 @@ radv_emit_viewport(struct radv_cmd_buffer *cmd_buffer)
    }
 }
 
-static void
-radv_emit_scissor(struct radv_cmd_buffer *cmd_buffer)
+void
+radv_write_scissors(struct radv_cmd_buffer *cmd_buffer, struct radeon_cmdbuf *cs)
 {
    uint32_t count = cmd_buffer->state.dynamic.scissor.count;
 
    si_write_scissors(cmd_buffer->cs, 0, count, cmd_buffer->state.dynamic.scissor.scissors,
                      cmd_buffer->state.dynamic.viewport.viewports,
                      cmd_buffer->state.emitted_pipeline->graphics.can_use_guardband);
+}
+
+static void
+radv_emit_scissor(struct radv_cmd_buffer *cmd_buffer)
+{
+   radv_write_scissors(cmd_buffer, cmd_buffer->cs);
 
    cmd_buffer->state.context_roll_without_scissor_emitted = false;
 }
