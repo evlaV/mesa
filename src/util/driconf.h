@@ -580,6 +580,10 @@
    DRI_CONF_OPT_B(radv_dgc, def, \
                   "Expose an experimental implementation of VK_NV_device_generated_commands")
 
+#define DRI_CONF_RADV_ENABLE_UNIFIED_HEAP_ON_APU(def) \
+   DRI_CONF_OPT_B(radv_enable_unified_heap_on_apu, def, \
+                  "Enable an unified heap with DEVICE_LOCAL on integrated GPUs")
+
 /**
  * \brief ANV specific configuration options
  */
