@@ -36714,7 +36714,7 @@
         "description": "radv: reserve more space in CS for SQTT",
         "nominated": true,
         "nomination_type": 1,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "7893040f807f2b81d03a6a19c577d6d98bcc116c",
         "notes": null
