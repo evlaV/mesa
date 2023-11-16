@@ -1,0 +1,181 @@
+stages:
+- base-containers
+- build
+- RADV
+
+
+# Only run on the CI branch
+.base-containers-rules:
+  rules:
+    - when: never  # HACK to stop executing pipelines on pushes until we get everything running
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "ci"'
+      when: on_success
+    - when: never
+
+# Run on all other branches, but the CI one
+.test-rules-base:
+  rules:
+    # Do not run any job in the 'ci' branch, or if the farm is offline
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: '$CI_COMMIT_REF_NAME == "ci"'
+      when: never
+
+.test-rules:
+  extends:
+    - .test-rules-base
+  rules:
+    - !reference [.test-rules-base, rules]
+    - when: on_success
+
+.test-manual-rules:
+  extends:
+    - .test-rules-base
+  rules:
+    - !reference [.test-rules-base, rules]
+    - when: manual
+
+.container-build:
+  image: quay.io/buildah/stable
+  tags:
+    - CI-gateway
+  variables:
+    # BASE_IMAGE:
+    # IMAGE_NAME:
+    # IMAGE_TAG:
+    # BUILD_SCRIPT:
+    IMAGE_LABEL: $CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG
+  script: |
+    set -eux
+
+    buildah login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+    manifest=$(buildah manifest inspect $IMAGE_LABEL 2>&1) || true
+    if [[ $manifest == *"manifest unknown"* ]]; then
+        buildcntr=$(buildah from --isolation=chroot $BASE_IMAGE)
+        buildmnt=$(buildah mount $buildcntr)
+
+        # HACK: This line will ensure that all jobs have origin/ci's .valve-ci/ folder
+        # added in the source tree, allowing access to the CI files without requiring
+        # adding commits on top of the branch being tested
+        dnf install -y git
+        git fetch origin ci && git restore --source origin/ci .valve-ci
+
+        buildah run --isolation chroot --env DEQP_BRANCH=${DEQP_BRANCH:-} --volume $PWD:/app/ --workingdir /app $buildcntr bash $BUILD_SCRIPT
+
+        buildah unmount $buildcntr
+        buildah commit --format docker $buildcntr $IMAGE_LABEL
+        buildah rm $buildcntr
+        buildah push $IMAGE_LABEL || buildah push $IMAGE_LABEL
+    else
+        echo "The image already exists, nothing to do :)"
+    fi
+
+# base-containers stage
+
+.base-container-build:
+  stage: base-containers
+  extends:
+    - .base-containers-rules
+    - .container-build
+  variables:
+    IMAGE_NAME: $CI_JOB_NAME
+    BUILD_SCRIPT: .valve-ci/base-container-build.sh
+
+jupiter-main-base:
+    extends:
+      - .base-container-build
+    variables:
+      BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-main/base-devel:latest
+      IMAGE_TAG: "2023-11-16"
+      DEQP_BRANCH: vulkan-cts-1.3.7.0
+
+# build stage
+
+.mesa-build:
+  stage: build
+  extends:
+    - .test-rules
+    - .container-build
+  variables:
+    IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
+    IMAGE_NAME: $CI_JOB_NAME
+    BUILD_SCRIPT: .valve-ci/mesa-build.sh
+
+jupiter-main-mesa:
+  extends:
+      - .mesa-build
+  variables:
+    BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
+    BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
+
+# RADV stage
+
+.executorctl_test:
+  stage: RADV
+  image: registry.freedesktop.org/gfx-ci/ci-tron/mesa-trigger:2023-06-02.1
+  dependencies: []
+  artifacts:
+    when: always
+    paths:
+      - ${RESULTS_FOLDER}
+    exclude:
+      - storage   # Work around a b2c bug
+    expire_in: 1 week
+  variables:
+    CI_TRON_INITRAMFS_URL: 'https://gitlab.freedesktop.org/gfx-ci/boot2container/-/jobs/54382708/artifacts/raw/releases/initramfs.linux_amd64.cpio.xz'
+    CI_TRON_JOB_SUCCESS_REGEX: '\[.*\]: Execution is over, pipeline status: 0\r$'
+    CI_TRON_JOB_WARN_REGEX: 'null'
+    CI_TRON_KERNEL_URL: 'https://private.mupuf.org/linux-steamos-frog-6.1.52-2'
+    CI_TRON_LOG_LEVEL: 6
+    CI_TRON_POWEROFF_DELAY: 15
+    CI_TRON_SESSION_END_REGEX: '^.*It''s now safe to turn off your computer\r$'
+    CI_TRON_SESSION_REBOOT_REGEX: '(GPU hang detected!|\*ERROR\* Not enough memory for command submission!)'
+    CI_TRON_TIMEOUT_BOOT_MINUTES: 180
+    CI_TRON_TIMEOUT_BOOT_RETRIES: 1
+    CI_TRON_TIMEOUT_FIRST_MINUTES: 2
+    CI_TRON_TIMEOUT_FIRST_RETRIES: 3
+    CI_TRON_TIMEOUT_MINUTES: 1
+    CI_TRON_TIMEOUT_OVERALL_MINUTES: 180
+    CI_TRON_TIMEOUT_RETRIES: 1
+    CI_TRON_CONTAINER_CMD: run-vkcts.sh
+    IMAGE_TAG: !reference [.mesa-build, variables, IMAGE_TAG]
+    IMAGE_NAME: !reference [.mesa-build, variables, IMAGE_NAME]
+    IMAGE: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}"
+    RESULTS_FOLDER: "${CI_JOB_NAME}-results"
+    GIT_STRATEGY: clone
+    GIT_SUBMODULE_STRATEGY: none
+  timeout: 3h10m
+  script: |
+      apk add git
+      git fetch origin ci && git restore --source origin/ci .valve-ci
+
+      python3 .valve-ci/generate_b2c.py \
+        --template .valve-ci/b2c.yml.jinja2.jinja2 \
+        --job-volume-exclusions "${CI_TRON_JOB_VOLUME_EXCLUSIONS}" \
+        --local-container="${IMAGE}" \
+        --working-dir "/job"
+      cat b2c.yml.jinja2
+      mkdir "${RESULTS_FOLDER}"
+      env PYTHONUNBUFFERED=1 executorctl run -w b2c.yml.jinja2 -s ${RESULTS_FOLDER}
+
+# Hardware jobs
+
+jupiter-main-radv-vangogh:
+  extends:
+    - .test-rules
+    - .executorctl_test
+  needs:
+    - jupiter-main-mesa
+  tags:
+    - amdgpu:codename:VANGOGH
+    - priority:low
+  variables:
+    IMAGE_NAME: jupiter-main-mesa
+    CI_TRON_GPU_VERSION: radv-vangogh-aco
+    CI_TRON_MUPUF_REGISTRY_USERNAME: ${MUPUF_REGISTRY_USERNAME}
+    CI_TRON_MUPUF_REGISTRY_PASSWORD: ${MUPUF_REGISTRY_PASSWORD}
+    CI_TRON_CI_JOB_CONCURRENCY: 8
+    CI_TRON_CMDLINE_EXTRAS: amd_iommu=off amdgpu.gttsize=8128 b2c.swap=16g
