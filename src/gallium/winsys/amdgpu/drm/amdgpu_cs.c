@@ -1541,6 +1541,7 @@ static void amdgpu_cs_submit_ib(void *job, void *gdata, int thread_index)
    struct drm_amdgpu_bo_list_in bo_list_in;
    unsigned initial_num_real_buffers = cs->num_real_buffers;
 
+   fprintf(stderr, "amdgpu_cs_submit_ib\n");
    simple_mtx_lock(&ws->bo_fence_lock);
    amdgpu_add_fence_dependencies_bo_lists(acs, cs);
    simple_mtx_unlock(&ws->bo_fence_lock);
@@ -1756,6 +1757,7 @@ static void amdgpu_cs_submit_ib(void *job, void *gdata, int thread_index)
          if (r == -ENOMEM)
             os_time_sleep(1000);
 
+         fprintf(stderr, "radeonsi submit raw\n");
          r = amdgpu_cs_submit_raw2(ws->dev, acs->ctx->ctx, bo_list,
                                    num_chunks, chunks, &seq_no);
       } while (r == -ENOMEM);

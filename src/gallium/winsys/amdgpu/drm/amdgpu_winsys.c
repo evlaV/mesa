@@ -496,6 +496,7 @@ amdgpu_winsys_create(int fd, const struct pipe_screen_config *config,
       (void) simple_mtx_init(&aws->bo_fence_lock, mtx_plain);
       (void) simple_mtx_init(&aws->bo_export_table_lock, mtx_plain);
 
+      fprintf(stderr, "radeonsi util_queue_init\n");
       if (!util_queue_init(&aws->cs_queue, "cs", 8, 1,
                            UTIL_QUEUE_INIT_RESIZE_IF_FULL, NULL)) {
          amdgpu_winsys_destroy(&ws->base);
