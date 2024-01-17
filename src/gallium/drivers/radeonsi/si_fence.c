@@ -538,6 +538,7 @@ finish:
 static void si_flush_from_st(struct pipe_context *ctx, struct pipe_fence_handle **fence,
                              unsigned flags)
 {
+   fprintf(stderr, "si_flush_from_st\n");
    return si_flush_all_queues(ctx, fence, flags, false);
 }
 
@@ -566,6 +567,7 @@ static void si_fence_server_signal(struct pipe_context *ctx, struct pipe_fence_h
     * The flush must not be asynchronous because the kernel must receive
     * the scheduled "signal" operation before any wait.
     */
+   fprintf(stderr, "si_fence_server_signal\n");
    si_flush_all_queues(ctx, NULL, 0, true);
 }
 
