@@ -1236,6 +1236,7 @@ static void si_blit(struct pipe_context *ctx, const struct pipe_blit_info *info)
          si_compute_copy_image((struct si_context*)sctx->screen->async_compute_context,
                                info->dst.resource, 0, info->src.resource, 0, 0, 0, 0,
                                &info->src.box, 0);
+         fprintf(stderr, "si_blit()\n");
          si_flush_gfx_cs((struct si_context*)sctx->screen->async_compute_context, 0, NULL);
          simple_mtx_unlock(&sscreen->async_compute_context_lock);
          return;

@@ -3866,6 +3866,7 @@ bool si_update_gs_ring_buffers(struct si_context *sctx)
 
    /* Flush the context to re-emit both cs_preamble states. */
    sctx->initial_gfx_cs_size = 0; /* force flush */
+   fprintf(stderr, "si_update_gs_ring_buffers\n");
    si_flush_gfx_cs(sctx, RADEON_FLUSH_ASYNC_START_NEXT_GFX_IB_NOW, NULL);
 
    return true;
@@ -4130,6 +4131,7 @@ void si_init_tess_factor_ring(struct si_context *sctx)
     * This is done only once in a lifetime of a context.
     */
    sctx->initial_gfx_cs_size = 0; /* force flush */
+   fprintf(stderr, "si_init_tess_factor_ring\n");
    si_flush_gfx_cs(sctx, RADEON_FLUSH_ASYNC_START_NEXT_GFX_IB_NOW, NULL);
 }
 

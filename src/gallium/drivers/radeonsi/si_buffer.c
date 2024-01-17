@@ -723,6 +723,7 @@ static bool si_resource_commit(struct pipe_context *pctx, struct pipe_resource *
     */
    if (radeon_emitted(&ctx->gfx_cs, ctx->initial_gfx_cs_size) &&
        ctx->ws->cs_is_buffer_referenced(&ctx->gfx_cs, res->buf, RADEON_USAGE_READWRITE)) {
+      fprintf(stderr, "si_resource_commit\n");
       si_flush_gfx_cs(ctx, RADEON_FLUSH_ASYNC_START_NEXT_GFX_IB_NOW, NULL);
    }
    ctx->ws->cs_sync_flush(&ctx->gfx_cs);

@@ -334,6 +334,7 @@ static bool si_fence_finish(struct pipe_screen *screen, struct pipe_context *ctx
        * This means we need to flush for such fences even when we're
        * not going to wait.
        */
+      fprintf(stderr, "si_fence_finish\n");
       si_flush_gfx_cs(sctx, (timeout ? 0 : PIPE_FLUSH_ASYNC) | RADEON_FLUSH_START_NEXT_GFX_IB_NOW,
                       NULL);
       sfence->gfx_unflushed.ctx = NULL;
@@ -488,6 +489,7 @@ static void si_flush_all_queues(struct pipe_context *ctx,
          gfx_fence = sctx->ws->cs_get_next_fence(&sctx->gfx_cs);
          deferred_fence = true;
       } else {
+         fprintf(stderr, "si_flush_all_queues\n");
          si_flush_gfx_cs(sctx, rflags, fence ? &gfx_fence : NULL);
       }
    }

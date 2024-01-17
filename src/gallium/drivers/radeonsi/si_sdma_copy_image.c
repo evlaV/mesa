@@ -396,6 +396,7 @@ bool si_sdma_copy_image(struct si_context *sctx, struct si_texture *dst, struct 
       si_decompress_dcc(sctx, src);
 
    /* Always flush the gfx queue to get the winsys to handle the dependencies for us. */
+   fprintf(stderr, "si_dma_copy_image\n");
    si_flush_gfx_cs(sctx, 0, NULL);
 
    switch (sctx->gfx_level) {

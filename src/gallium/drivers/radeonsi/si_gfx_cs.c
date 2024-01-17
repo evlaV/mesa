@@ -334,6 +334,7 @@ static void si_tmz_preamble(struct si_context *sctx)
 {
    bool secure = si_gfx_resources_check_encrypted(sctx);
    if (secure != sctx->ws->cs_is_secure(&sctx->gfx_cs)) {
+      fprintf(stderr, "si_tmz_preamble\n");
       si_flush_gfx_cs(sctx, RADEON_FLUSH_ASYNC_START_NEXT_GFX_IB_NOW |
                             RADEON_FLUSH_TOGGLE_SECURE_SUBMISSION, NULL);
    }

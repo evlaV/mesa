@@ -2017,8 +2017,10 @@ static inline void si_need_gfx_cs_space(struct si_context *ctx, unsigned num_dra
 {
    struct radeon_cmdbuf *cs = &ctx->gfx_cs;
 
-   if (!ctx->ws->cs_check_space(cs, si_get_minimum_num_gfx_cs_dwords(ctx, num_draws)))
+   if (!ctx->ws->cs_check_space(cs, si_get_minimum_num_gfx_cs_dwords(ctx, num_draws))) {
+      fprintf(stderr, "si_need_gfx_cs_space\n");
       si_flush_gfx_cs(ctx, RADEON_FLUSH_ASYNC_START_NEXT_GFX_IB_NOW, NULL);
+   }
 }
 
 /**
