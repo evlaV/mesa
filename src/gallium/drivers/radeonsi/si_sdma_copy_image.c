@@ -429,5 +429,6 @@ bool si_sdma_copy_image(struct si_context *sctx, struct si_texture *dst, struct 
       }
    }
 
+   fprintf(stderr, "si_sdma_copy_image\n");
    return ws->cs_flush(sctx->sdma_cs, flags, NULL) == 0;
 }

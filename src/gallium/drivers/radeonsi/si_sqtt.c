@@ -549,11 +549,13 @@ static void si_sqtt_init_cs(struct si_context *sctx) {
 
 static void si_begin_sqtt(struct si_context *sctx, struct radeon_cmdbuf *rcs) {
   struct radeon_cmdbuf *cs = sctx->sqtt->start_cs[AMD_IP_GFX];
+  fprintf(stderr, "si_begin_sqtt()\n");
   sctx->ws->cs_flush(cs, 0, NULL);
 }
 
 static void si_end_sqtt(struct si_context *sctx, struct radeon_cmdbuf *rcs) {
   struct radeon_cmdbuf *cs = sctx->sqtt->stop_cs[AMD_IP_GFX];
+  fprintf(stderr, "si_end_sqtt()\n");
   sctx->ws->cs_flush(cs, 0, &sctx->last_sqtt_fence);
 }
 

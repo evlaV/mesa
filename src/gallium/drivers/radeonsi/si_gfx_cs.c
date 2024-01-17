@@ -137,6 +137,7 @@ void si_flush_gfx_cs(struct si_context *ctx, unsigned flags, struct pipe_fence_h
    }
 
    /* Flush the CS. */
+   fprintf(stderr, "si_flush_gfx_cs()\n");
    ws->cs_flush(cs, flags, &ctx->last_gfx_fence);
 
    if (u_trace_perfetto_active(&ctx->ds.trace_context) && start_ts > 0) {

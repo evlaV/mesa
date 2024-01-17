@@ -1098,6 +1098,7 @@ static void si_test_gds_memory_management(struct si_context *sctx, unsigned allo
             SI_OP_CPDMA_SKIP_CHECK_CS_SPACE, 0,
             0);
 
+         fprintf(stderr, "si_test_gds_memory_management()\n");
          ws->cs_add_buffer(&cs[i], gds_bo[i], RADEON_USAGE_READWRITE, domain);
          ws->cs_flush(&cs[i], PIPE_FLUSH_ASYNC, NULL);
       }
