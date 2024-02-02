@@ -125,7 +125,7 @@ jupiter-main-mesa:
       - storage   # Work around a b2c bug
     expire_in: 1 week
   variables:
-    CI_TRON_INITRAMFS_URL: 'https://gitlab.freedesktop.org/gfx-ci/boot2container/-/jobs/54382708/artifacts/raw/releases/initramfs.linux_amd64.cpio.xz'
+    CI_TRON_INITRAMFS_URL: 'https://gitlab.freedesktop.org/gfx-ci/boot2container/-/jobs/54454655/artifacts/raw/releases/initramfs.linux_amd64.cpio.xz'
     CI_TRON_JOB_SUCCESS_REGEX: '\[.*\]: Execution is over, pipeline status: 0\r$'
     CI_TRON_JOB_WARN_REGEX: 'null'
     CI_TRON_KERNEL_URL: 'https://private.mupuf.org/linux-steamos-frog-6.1.52-2'
