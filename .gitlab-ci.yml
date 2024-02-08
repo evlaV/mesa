@@ -7,7 +7,7 @@ stages:
 # Only run on the CI branch
 .base-containers-rules:
   rules:
-    - when: never  # HACK to stop executing pipelines on pushes until we get everything running
+    #    - when: never  # HACK to stop executing pipelines on pushes until we get everything running
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
     - if: '$CI_COMMIT_REF_NAME == "ci"'
