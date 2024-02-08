@@ -10,7 +10,7 @@ stages:
     #    - when: never  # HACK to stop executing pipelines on pushes until we get everything running
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
-    - if: '$CI_COMMIT_REF_NAME == "ci"'
+    - if: '$CI_COMMIT_REF_NAME == "ci-test-sam"'
       when: on_success
     - when: never
 
@@ -61,7 +61,7 @@ stages:
         # added in the source tree, allowing access to the CI files without requiring
         # adding commits on top of the branch being tested
         dnf install -y git
-        git fetch origin ci && git restore --source origin/ci .valve-ci
+        git fetch origin ci-test-sam && git restore --source origin/ci-test-sam .valve-ci
 
         buildah run --isolation chroot --env DEQP_BRANCH=${DEQP_BRANCH:-} --env VKD3D_PROTON_COMMIT=${VKD3D_PROTON_COMMIT:-} --volume $PWD:/app/ --workingdir /app $buildcntr bash $BUILD_SCRIPT
 
@@ -150,7 +150,7 @@ jupiter-main-mesa:
   timeout: 3h10m
   script: |
       apk add git
-      git fetch origin ci && git restore --source origin/ci .valve-ci
+      git fetch origin ci-test-sam && git restore --source origin/ci-test-sam .valve-ci
 
       python3 .valve-ci/generate_b2c.py \
         --template .valve-ci/b2c.yml.jinja2.jinja2 \
