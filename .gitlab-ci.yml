@@ -189,3 +189,14 @@ jupiter-main-mesa:
 jupiter-main-vkcts-vangogh:
   extends:
     - .test-vkcts
+
+.test-vkd3d-proton:
+  extends:
+    - .jupiter-main-test
+  variables:
+    CI_TRON_CONTAINER_CMD: run-vkd3d-proton.sh
+    CI_TRON_JOB_SUCCESS_REGEX: 'vkd3d-proton execution: SUCCESS\r$'
+
+jupiter-main-vkd3d-proton-vangogh:
+  extends:
+    - .test-vkd3d-proton

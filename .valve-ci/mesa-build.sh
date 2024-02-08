@@ -19,6 +19,7 @@ rm -rf drm
 mkdir -p /mesa
 cp src/amd/ci/*.txt .gitlab-ci/all-skips.txt /mesa/
 cp .valve-ci/run-vkcts.sh /usr/local/bin/
+cp .valve-ci/run-vkd3d-proton.sh /usr/local/bin/
 
 # Jupiter: only build RADV, the rest comes from upstream/Arch Mesa
 # In particular:
