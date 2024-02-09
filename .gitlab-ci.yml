@@ -140,7 +140,6 @@ jupiter-main-mesa:
     CI_TRON_TIMEOUT_MINUTES: 1
     CI_TRON_TIMEOUT_OVERALL_MINUTES: 180
     CI_TRON_TIMEOUT_RETRIES: 1
-    CI_TRON_CONTAINER_CMD: run-vkcts.sh
     IMAGE_TAG: !reference [.mesa-build, variables, IMAGE_TAG]
     IMAGE_NAME: !reference [.mesa-build, variables, IMAGE_NAME]
     IMAGE: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}"
@@ -163,7 +162,7 @@ jupiter-main-mesa:
 
 # Hardware jobs
 
-jupiter-main-radv-vangogh:
+.jupiter-main-test:
   extends:
     - .test-rules
     - .executorctl_test
@@ -179,3 +178,13 @@ jupiter-main-radv-vangogh:
     CI_TRON_MUPUF_REGISTRY_PASSWORD: ${MUPUF_REGISTRY_PASSWORD}
     CI_TRON_CI_JOB_CONCURRENCY: 8
     CI_TRON_CMDLINE_EXTRAS: amd_iommu=off amdgpu.gttsize=8128 b2c.swap=16g
+
+.test-vkcts:
+  extends:
+    - .jupiter-main-test
+  variables:
+    CI_TRON_CONTAINER_CMD: run-vkcts.sh
+
+jupiter-main-vkcts-vangogh:
+  extends:
+    - .test-vkcts
