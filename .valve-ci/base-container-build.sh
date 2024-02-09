@@ -6,7 +6,7 @@ set -eux
 echo "Building vkd3d-proton ('$VKD3D_PROTON_COMMIT')"
 
 # Install vkd3d-proton dependencies
-pacman --noconfirm -Suy meson wine-staging glslang
+pacman --noconfirm -Suy git ninja meson wine-staging glslang
 
 git clone https://github.com/HansKristian-Work/vkd3d-proton.git --single-branch -b master --no-checkout /vkd3d-proton-src
 pushd /vkd3d-proton-src
