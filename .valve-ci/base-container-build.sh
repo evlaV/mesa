@@ -25,7 +25,35 @@ echo "Building '$DEQP_BRANCH'"
 # Install VKCTS dependencies
 pacman --noconfirm -Suy git ninja cmake python3 libx11 libglvnd
 
+git config --global user.email "steamos@example.com"
+git config --global user.name "SteamOS CI"
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git -b $DEQP_BRANCH --depth 1 /VK-GL-CTS
+
+vkcts_commits_to_backport=(
+    # Take multiview into account for task shader inv. stats
+    22aa3f4c59f6e1d4daebd5a8c9c05bce6cd3b63b
+
+    # Remove illegal mesh shader query tests
+    2a87f7b25dc27188be0f0a003b2d7aef69d9002e
+
+    # Relax fragment shader invocations result verifications
+    0d8bf6a2715f95907e9cf86a86876ff1f26c66fe
+
+    # Fix several issues in dynamic rendering basic tests
+    c5453824b498c981c6ba42017d119f5de02a3e34
+)
+
+pushd /VK-GL-CTS
+cts_commits_to_backport="vkcts_commits_to_backport[@]"
+for commit in "${!cts_commits_to_backport}"
+do
+  PATCH_URL="https://github.com/KhronosGroup/VK-GL-CTS/commit/$commit.patch"
+  echo "Apply patch to VKCTS from $PATCH_URL"
+  curl -L --retry 4 -f --retry-all-errors --retry-delay 60 $PATCH_URL | \
+    git am -
+done
+popd
+
 python3 /VK-GL-CTS/external/fetch_sources.py --insecure
 cmake -S /VK-GL-CTS -B /deqp -G Ninja \
       -DDEQP_TARGET=surfaceless \

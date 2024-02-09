@@ -89,7 +89,7 @@ jupiter-main-base:
       - .base-container-build
     variables:
       BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-main/base-devel:latest
-      IMAGE_TAG: "2024-02-09-vkd3d-proton"
+      IMAGE_TAG: "2024-02-09-vkcts"
       DEQP_BRANCH: vulkan-cts-1.3.7.0
       VKD3D_PROTON_COMMIT: a0ccc383937903f4ca0997ce53e41ccce7f2f2ec
 
