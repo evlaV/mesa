@@ -141,6 +141,7 @@ jupiter-main-mesa:
     CI_TRON_TIMEOUT_MINUTES: 1
     CI_TRON_TIMEOUT_OVERALL_MINUTES: 180
     CI_TRON_TIMEOUT_RETRIES: 1
+    CI_TRON_JOB_VOLUME_EXCLUSIONS: "*.shader_cache,vkd3d-proton.cache*"
     IMAGE_TAG: !reference [.mesa-build, variables, IMAGE_TAG]
     IMAGE_NAME: !reference [.mesa-build, variables, IMAGE_NAME]
     IMAGE: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}"
