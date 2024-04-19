@@ -54,12 +54,13 @@ stages:
 
     manifest=$(buildah manifest inspect $IMAGE_LABEL 2>&1) || true
     if [[ $manifest == *"manifest unknown"* ]]; then
-        # Use a read-only registry token to access the steamos image before reverting
-        # to the job token to be able to push the image to the project's registry
-        buildah login -u gitlab-ci-token -p $STEAMOS_REGISTRY_TOKEN_RO $CI_REGISTRY
-        buildcntr=$(buildah from --isolation=chroot $BASE_IMAGE)
-        buildah login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+        # Allow the from container to be located in a private project by allowing
+        # the use of an alternative token
+        if [ -n "${FROM_CONTAINER_REGISTRY_TOKEN:-}" ]; then
+            buildah login -u gitlab-ci-token -p ${FROM_CONTAINER_REGISTRY_TOKEN} $CI_REGISTRY
+        fi
 
+        buildcntr=$(buildah from --isolation=chroot $BASE_IMAGE)
         buildmnt=$(buildah mount $buildcntr)
 
         # HACK: This line will ensure that all jobs have origin/ci's .valve-ci/ folder
@@ -73,6 +74,9 @@ stages:
         buildah unmount $buildcntr
         buildah commit --format docker $buildcntr $IMAGE_LABEL
         buildah rm $buildcntr
+
+        # Push to the local registry of the project
+        buildah login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
         buildah push $IMAGE_LABEL || buildah push $IMAGE_LABEL
     else
         echo "The image already exists, nothing to do :)"
@@ -88,6 +92,10 @@ stages:
   variables:
     IMAGE_NAME: $CI_JOB_NAME
     BUILD_SCRIPT: .valve-ci/base-container-build.sh
+
+    # Use a read-only registry token to access the steamos image since the
+    # job's one can't access the container registry of other private projects
+    FROM_CONTAINER_REGISTRY_TOKEN: $STEAMOS_REGISTRY_TOKEN_RO
 
 jupiter-main-base:
     extends:
