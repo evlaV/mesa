@@ -38,6 +38,7 @@ stages:
 
 .container-build:
   image: quay.io/buildah/stable
+  timeout: 2h
   tags:
     - CI-gateway
   variables:
