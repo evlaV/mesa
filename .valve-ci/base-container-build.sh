@@ -30,17 +30,20 @@ git config --global user.name "SteamOS CI"
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git -b $DEQP_BRANCH --depth 1 /VK-GL-CTS
 
 vkcts_commits_to_backport=(
-    # Take multiview into account for task shader inv. stats
-    22aa3f4c59f6e1d4daebd5a8c9c05bce6cd3b63b
+    # Add missing subgroup support checks for linear derivate tests
+    4bbc98181f01b60286f11f2cea5940332f883154
 
-    # Remove illegal mesh shader query tests
-    2a87f7b25dc27188be0f0a003b2d7aef69d9002e
+    # Use subgroups helper in derivate tests
+    0a4ddb79f3d65fb51e8efd42cbfc8d0c051af8b8
 
-    # Relax fragment shader invocations result verifications
-    0d8bf6a2715f95907e9cf86a86876ff1f26c66fe
+    # Add missing subgroup size in shader object compute tests
+    30176295a204697d3e94192ba19693efbc74a5bf
 
-    # Fix several issues in dynamic rendering basic tests
-    c5453824b498c981c6ba42017d119f5de02a3e34
+    # Add missing virtual destructor to TriangleGenerator
+    dc448441dbacea3fc8ff4764de5b4a7b0e9d9be4
+
+    # Add check for import & export bits for vk drm format modifier tests
+    a9482fd38763636ea09d02356924aeab53edebd0
 )
 
 pushd /VK-GL-CTS
