@@ -442,8 +442,12 @@ radv_amdgpu_winsys_bo_create(struct radeon_winsys *_ws, uint64_t size, unsigned 
        * of unnecessary movement. This helps significantly when
        * e.g. Horizon Zero Dawn allocates more memory than we have
        * VRAM.
+       *
+       * This is fixed in kernel versions since DRM minor 58, which
+       * implement more advanced memory management.
        */
-      request.preferred_heap |= AMDGPU_GEM_DOMAIN_GTT;
+       if (!ws->info.has_dedicated_vram || ws->info.drm_minor < 58)
+         request.preferred_heap |= AMDGPU_GEM_DOMAIN_GTT;
    }
 
    if (initial_domain & RADEON_DOMAIN_GTT)
