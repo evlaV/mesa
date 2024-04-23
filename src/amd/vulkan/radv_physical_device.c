@@ -2499,18 +2499,21 @@ radv_get_memory_budget_properties(VkPhysicalDevice physicalDevice,
       unsigned mask = pdev->heaps;
       unsigned heap = 0;
       while (mask) {
-         uint64_t internal_usage = 0, system_usage = 0;
+         uint64_t internal_usage = 0, system_usage = 0, evicted_size = 0;
          unsigned type = 1u << u_bit_scan(&mask);
 
          switch (type) {
          case RADV_HEAP_VRAM:
             internal_usage = pdev->ws->query_value(pdev->ws, RADEON_ALLOCATED_VRAM);
             system_usage = pdev->ws->query_value(pdev->ws, RADEON_VRAM_USAGE);
+            evicted_size += pdev->ws->query_value(pdev->ws, RADEON_EVICTED_VRAM);
             break;
          case RADV_HEAP_VRAM_VIS:
             internal_usage = pdev->ws->query_value(pdev->ws, RADEON_ALLOCATED_VRAM_VIS);
             if (!(pdev->heaps & RADV_HEAP_VRAM))
                internal_usage += pdev->ws->query_value(pdev->ws, RADEON_ALLOCATED_VRAM);
+            if (!(pdev->heaps & RADV_HEAP_VRAM))
+               evicted_size += pdev->ws->query_value(pdev->ws, RADEON_EVICTED_VRAM);
             system_usage = pdev->ws->query_value(pdev->ws, RADEON_VRAM_VIS_USAGE);
             break;
          case RADV_HEAP_GTT:
@@ -2523,6 +2526,8 @@ radv_get_memory_budget_properties(VkPhysicalDevice physicalDevice,
 
          uint64_t free_space = pdev->memory_properties.memoryHeaps[heap].size -
                                MIN2(pdev->memory_properties.memoryHeaps[heap].size, total_usage);
+         /* Clamp evicted_size to internal_usage to prevent the resulting budget value from overflowing */
+         free_space -= MIN2(evicted_size, internal_usage);
          memoryBudget->heapBudget[heap] = free_space + internal_usage;
          memoryBudget->heapUsage[heap] = internal_usage;
          ++heap;
