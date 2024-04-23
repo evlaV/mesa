@@ -1074,6 +1074,21 @@ radv_amdgpu_dump_bo_ranges(struct radeon_winsys *_ws, FILE *file)
    } else
       fprintf(file, "  To get BO VA ranges, please specify RADV_DEBUG=allbos\n");
 }
+
+static void
+radv_amdgpu_set_bo_priority(struct radeon_winsys *_ws, struct radeon_winsys_bo *_bo, float prio) {
+   struct radv_amdgpu_winsys *ws = radv_amdgpu_winsys(_ws);
+   struct radv_amdgpu_winsys_bo *bo = radv_amdgpu_winsys_bo(_bo);
+
+   struct drm_amdgpu_gem_op args = {};
+
+   args.handle = bo->bo_handle;
+   args.op = AMDGPU_GEM_OP_SET_PRIORITY;
+   args.value = (unsigned)(prio * (float)AMDGPU_BO_MAX_PRIORITY);
+
+   drmCommandWriteRead(amdgpu_device_get_fd(ws->dev), DRM_AMDGPU_GEM_OP, &args, sizeof(args));
+}
+
 void
 radv_amdgpu_bo_init_functions(struct radv_amdgpu_winsys *ws)
 {
@@ -1091,4 +1106,5 @@ radv_amdgpu_bo_init_functions(struct radv_amdgpu_winsys *ws)
    ws->base.buffer_make_resident = radv_amdgpu_winsys_bo_make_resident;
    ws->base.dump_bo_ranges = radv_amdgpu_dump_bo_ranges;
    ws->base.dump_bo_log = radv_amdgpu_dump_bo_log;
+   ws->base.set_bo_priority = radv_amdgpu_set_bo_priority;
 }

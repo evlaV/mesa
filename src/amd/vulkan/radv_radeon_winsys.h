@@ -309,6 +309,8 @@ struct radeon_winsys {
    struct ac_addrlib *(*get_addrlib)(struct radeon_winsys *ws);
 
    const struct vk_sync_type *const *(*get_sync_types)(struct radeon_winsys *ws);
+
+   void (*set_bo_priority)(struct radeon_winsys *ws, struct radeon_winsys_bo *bo, float prio);
 };
 
 static inline void
