@@ -94,6 +94,12 @@ radv_amdgpu_winsys_query_value(struct radeon_winsys *rws, enum radeon_value_id v
    case RADEON_GTT_USAGE:
       amdgpu_query_heap_info(ws->dev, AMDGPU_GEM_DOMAIN_GTT, 0, &heap);
       return heap.heap_usage;
+   case RADEON_EVICTED_VRAM:
+      if (ws->info.drm_minor >= 58)
+         amdgpu_query_info(ws->dev, AMDGPU_INFO_EVICTED_VRAM, sizeof(uint64_t), &retval);
+      else
+         retval = 0;
+      return retval;
    case RADEON_GPU_TEMPERATURE:
       amdgpu_query_sensor_info(ws->dev, AMDGPU_INFO_SENSOR_GPU_TEMP, 4, &retval);
       return retval;
