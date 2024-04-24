@@ -27,6 +27,8 @@
 #include "util/u_math.h"
 #include "util/u_memory.h"
 
+#define AMDGPU_BO_MAX_PRIORITY 6
+
 static void radv_amdgpu_winsys_bo_destroy(struct radeon_winsys *_ws, struct radeon_winsys_bo *_bo);
 
 static int
