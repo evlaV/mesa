@@ -1881,7 +1881,8 @@ radv_amdgpu_cs_submit(struct radv_amdgpu_ctx *ctx, struct radv_amdgpu_cs_request
       if (r == -ENOMEM)
          os_time_sleep(1000);
 
-      r = ac_drm_cs_submit_raw2(ctx->ws->dev, ctx->ctx_handle, 0, num_chunks, chunks, &request->seq_no);
+      r = ac_drm_cs_submit_raw3(ctx->ws->dev, ctx->ctx_handle, 0, AMDGPU_CS_NO_IMPLICIT_SYNC, num_chunks, chunks,
+                                &request->seq_no);
    } while (r == -ENOMEM && os_time_get_nano() < abs_timeout_ns);
 
    if (r) {

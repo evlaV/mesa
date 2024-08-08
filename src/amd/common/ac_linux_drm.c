@@ -519,6 +519,13 @@ int ac_drm_cs_syncobj_timeline_wait(ac_drm_device *dev, uint32_t *handles, uint6
 int ac_drm_cs_submit_raw2(ac_drm_device *dev, uint32_t ctx_id, uint32_t bo_list_handle,
                           int num_chunks, struct drm_amdgpu_cs_chunk *chunks, uint64_t *seq_no)
 {
+   return ac_drm_cs_submit_raw3(dev, ctx_id, bo_list_handle, 0, num_chunks, chunks, seq_no);
+}
+
+int ac_drm_cs_submit_raw3(ac_drm_device *dev, uint32_t ctx_id, uint32_t bo_list_handle,
+                          uint32_t flags, int num_chunks, struct drm_amdgpu_cs_chunk *chunks,
+                          uint64_t *seq_no)
+{
 #ifdef HAVE_AMDGPU_VIRTIO
    if (dev->is_virtio)
       return amdvgpu_cs_submit_raw2(dev->vdev, ctx_id, bo_list_handle, num_chunks, chunks, seq_no);
@@ -536,6 +543,7 @@ int ac_drm_cs_submit_raw2(ac_drm_device *dev, uint32_t ctx_id, uint32_t bo_list_
    cs.in.ctx_id = ctx_id;
    cs.in.bo_list_handle = bo_list_handle;
    cs.in.num_chunks = num_chunks;
+   cs.in.flags = flags;
    r = drm_ioctl_write_read(dev->fd, DRM_AMDGPU_CS, &cs, sizeof(cs));
    if (!r && seq_no)
       *seq_no = cs.out.handle;

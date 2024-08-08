@@ -399,6 +399,9 @@ MESAPROC int ac_drm_cs_syncobj_transfer(ac_drm_device *dev, uint32_t dst_handle,
 MESAPROC int ac_drm_cs_submit_raw2(ac_drm_device *dev, uint32_t ctx_id, uint32_t bo_list_handle,
                                int num_chunks, struct drm_amdgpu_cs_chunk *chunks,
                                uint64_t *seq_no) TAIL;
+MESAPROC int ac_drm_cs_submit_raw3(ac_drm_device *dev, uint32_t ctx_id, uint32_t bo_list_handle,
+                               uint32_t flags, int num_chunks, struct drm_amdgpu_cs_chunk *chunks,
+                               uint64_t *seq_no) TAIL;
 MESAPROC void ac_drm_cs_chunk_fence_info_to_data(uint32_t bo_handle, uint64_t offset,
                                              struct drm_amdgpu_cs_chunk_data *data) TAILV;
 MESAPROC int ac_drm_cs_syncobj_timeline_wait(ac_drm_device *dev, uint32_t *handles, uint64_t *points,
