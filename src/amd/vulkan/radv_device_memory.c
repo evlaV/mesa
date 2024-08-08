@@ -224,6 +224,10 @@ radv_alloc_memory(struct radv_device *device, const VkMemoryAllocateInfo *pAlloc
           */
          if (domain == RADEON_DOMAIN_VRAM)
             flags |= RADEON_FLAG_GTT_WC;
+
+         /* If exported as DMA BUF this buffer could be passed to various systems later using implicit sync. */
+         if (export_info->handleTypes & VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT)
+            flags |= RADEON_FLAG_IMPLICIT_SYNC;
       } else if (!import_info) {
          /* neither export nor import */
          flags |= RADEON_FLAG_NO_INTERPROCESS_SHARING;
