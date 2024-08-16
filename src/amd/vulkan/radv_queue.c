@@ -35,7 +35,8 @@ radv_get_queue_global_priority(const VkDeviceQueueGlobalPriorityCreateInfo *pObj
 }
 
 static VkResult
-radv_sparse_buffer_bind_memory(struct radv_device *device, const VkSparseBufferMemoryBindInfo *bind)
+radv_sparse_buffer_bind_memory(struct radv_device *device, const VkSparseBufferMemoryBindInfo *bind, uint32_t wait_count,
+                               const struct vk_sync_wait *waits)
 {
    VK_FROM_HANDLE(radv_buffer, buffer, bind->buffer);
    VkResult result = VK_SUCCESS;
@@ -65,7 +66,7 @@ radv_sparse_buffer_bind_memory(struct radv_device *device, const VkSparseBufferM
       }
       if (size) {
          result = radv_bo_virtual_bind(device, &buffer->vk.base, buffer->bo, resourceOffset, size, mem ? mem->bo : NULL,
-                                       memoryOffset);
+                                       memoryOffset, wait_count, waits);
          if (result != VK_SUCCESS)
             return result;
       }
@@ -76,14 +77,15 @@ radv_sparse_buffer_bind_memory(struct radv_device *device, const VkSparseBufferM
    }
    if (size) {
       result = radv_bo_virtual_bind(device, &buffer->vk.base, buffer->bo, resourceOffset, size, mem ? mem->bo : NULL,
-                                    memoryOffset);
+                                    memoryOffset, wait_count, waits);
    }
 
    return result;
 }
 
 static VkResult
-radv_sparse_image_opaque_bind_memory(struct radv_device *device, const VkSparseImageOpaqueMemoryBindInfo *bind)
+radv_sparse_image_opaque_bind_memory(struct radv_device *device, const VkSparseImageOpaqueMemoryBindInfo *bind, uint32_t wait_count,
+                                     const struct vk_sync_wait *waits)
 {
    VK_FROM_HANDLE(radv_image, image, bind->image);
    VkResult result;
@@ -95,7 +97,7 @@ radv_sparse_image_opaque_bind_memory(struct radv_device *device, const VkSparseI
          mem = radv_device_memory_from_handle(bind->pBinds[i].memory);
 
       result = radv_bo_virtual_bind(device, &image->vk.base, image->bindings[0].bo, bind->pBinds[i].resourceOffset,
-                                    bind->pBinds[i].size, mem ? mem->bo : NULL, bind->pBinds[i].memoryOffset);
+                                    bind->pBinds[i].size, mem ? mem->bo : NULL, bind->pBinds[i].memoryOffset, wait_count, waits);
       if (result != VK_SUCCESS)
          return result;
    }
@@ -104,7 +106,8 @@ radv_sparse_image_opaque_bind_memory(struct radv_device *device, const VkSparseI
 }
 
 static VkResult
-radv_sparse_image_bind_memory(struct radv_device *device, const VkSparseImageMemoryBindInfo *bind)
+radv_sparse_image_bind_memory(struct radv_device *device, const VkSparseImageMemoryBindInfo *bind, uint32_t wait_count,
+                              const struct vk_sync_wait *waits)
 {
    VK_FROM_HANDLE(radv_image, image, bind->image);
    const struct radv_physical_device *pdev = radv_device_physical(device);
@@ -157,7 +160,7 @@ radv_sparse_image_bind_memory(struct radv_device *device, const VkSparseImageMem
       if (whole_subres) {
          uint64_t size = (uint64_t)aligned_extent_width * aligned_extent_height * aligned_extent_depth * bs;
          result = radv_bo_virtual_bind(device, &image->vk.base, image->bindings[0].bo, offset, size,
-                                       mem ? mem->bo : NULL, mem_offset);
+                                       mem ? mem->bo : NULL, mem_offset, wait_count, waits);
          if (result != VK_SUCCESS)
             return result;
       } else {
@@ -172,7 +175,8 @@ radv_sparse_image_bind_memory(struct radv_device *device, const VkSparseImageMem
 
                result = radv_bo_virtual_bind(device, &image->vk.base, image->bindings[0].bo, bo_offset, size,
                                              mem ? mem->bo : NULL,
-                                             mem_offset + (uint64_t)mem_y_increment * y + mem_z_increment * z);
+                                             mem_offset + (uint64_t)mem_y_increment * y + mem_z_increment * z,
+                                             wait_count, waits);
                if (result != VK_SUCCESS)
                   return result;
             }
@@ -187,19 +191,22 @@ static VkResult
 radv_queue_submit_bind_sparse_memory(struct radv_device *device, struct vk_queue_submit *submission)
 {
    for (uint32_t i = 0; i < submission->buffer_bind_count; ++i) {
-      VkResult result = radv_sparse_buffer_bind_memory(device, submission->buffer_binds + i);
+      VkResult result = radv_sparse_buffer_bind_memory(device, submission->buffer_binds + i,
+                                                       submission->wait_count, submission->waits);
       if (result != VK_SUCCESS)
          return result;
    }
 
    for (uint32_t i = 0; i < submission->image_opaque_bind_count; ++i) {
-      VkResult result = radv_sparse_image_opaque_bind_memory(device, submission->image_opaque_binds + i);
+      VkResult result = radv_sparse_image_opaque_bind_memory(device, submission->image_opaque_binds + i,
+                                                             submission->wait_count, submission->waits);
       if (result != VK_SUCCESS)
          return result;
    }
 
    for (uint32_t i = 0; i < submission->image_bind_count; ++i) {
-      VkResult result = radv_sparse_image_bind_memory(device, submission->image_binds + i);
+      VkResult result = radv_sparse_image_bind_memory(device, submission->image_binds + i,
+                                                      submission->wait_count, submission->waits);
       if (result != VK_SUCCESS)
          return result;
    }
