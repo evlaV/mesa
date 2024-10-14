@@ -30,20 +30,14 @@ git config --global user.name "SteamOS CI"
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git -b $DEQP_BRANCH --depth 1 /VK-GL-CTS
 
 vkcts_commits_to_backport=(
-    # Add missing subgroup support checks for linear derivate tests
-    4bbc98181f01b60286f11f2cea5940332f883154
+    # Fix sync issues in copy and blit tests
+    24f214d80a866c04745f6c3b5027a4b540568598
 
-    # Use subgroups helper in derivate tests
-    0a4ddb79f3d65fb51e8efd42cbfc8d0c051af8b8
+    # Don't access out-of-bounds per-vertex attributes
+    6e36996fdf38b91bd08b97c1aa8ddb7601e43aae
 
-    # Add missing subgroup size in shader object compute tests
-    30176295a204697d3e94192ba19693efbc74a5bf
-
-    # Add missing virtual destructor to TriangleGenerator
-    dc448441dbacea3fc8ff4764de5b4a7b0e9d9be4
-
-    # Add check for import & export bits for vk drm format modifier tests
-    a9482fd38763636ea09d02356924aeab53edebd0
+    # Remove some of FDM + DRLR tests
+    d712381852e7f90cdd0a0bac5e43ac10d9bb5241
 )
 
 pushd /VK-GL-CTS
