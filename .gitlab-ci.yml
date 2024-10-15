@@ -205,8 +205,8 @@ jupiter-main-mesa:
 
 # VanGogh
 
-.mupuf-vangogh:
-    tags:
+.vangogh-test-valve:
+  tags:
     - amdgpu:codename:VANGOGH
     - priority:low
   variables:
@@ -217,10 +217,12 @@ jupiter-main-mesa:
 jupiter-main-vkcts-vangogh:
   extends:
     - .test-vkcts
+    - .vangogh-test-valve
 
 jupiter-main-vkd3d-proton-vangogh:
   extends:
     - .test-vkd3d-proton
+    - .vangogh-test-valve
 
 
 # Navi21
@@ -237,10 +239,12 @@ jupiter-main-vkd3d-proton-vangogh:
 jupiter-main-vkcts-navi21:
   extends:
     - .test-vkcts
+    - .navi21-test-valve
 
 jupiter-main-vkd3d-proton-navi21:
   extends:
     - .test-vkd3d-proton
+    - .navi21-test-valve
 
 
 # Navi31
@@ -257,7 +261,9 @@ jupiter-main-vkd3d-proton-navi21:
 jupiter-main-vkcts-navi31:
   extends:
     - .test-vkcts
+    - .navi31-test-valve
 
 jupiter-main-vkd3d-proton-navi31:
   extends:
     - .test-vkd3d-proton
+    - .navi31-test-valve
