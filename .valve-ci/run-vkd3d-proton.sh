@@ -57,7 +57,7 @@ then
     # Make sure that the failures found in this run match the current expectation
     if ! diff -q ".gitlab-ci/vkd3d-proton/$VKD3D_PROTON_RESULTS.txt.baseline" "$RESULTSFILE"; then
         printf "%s\n" "Changes found, see vkd3d-proton.log!"
-        quiet diff --color=always -u ".gitlab-ci/vkd3d-proton/$VKD3D_PROTON_RESULTS.txt.baseline" "$RESULTSFILE" 2>&1
+        quiet diff --color=always -u ".gitlab-ci/vkd3d-proton/$VKD3D_PROTON_RESULTS.txt.baseline" "$RESULTSFILE" >&2
         exit 1
     fi
 fi
