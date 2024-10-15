@@ -18,6 +18,7 @@ rm -rf drm
 # Install the expectations and execution scripts
 mkdir -p /mesa
 cp src/amd/ci/*.txt .gitlab-ci/all-skips.txt /mesa/
+cp .gitlab-ci/setup-test-env.sh /usr/local/bin/
 cp .valve-ci/run-vkcts.sh /usr/local/bin/
 cp .valve-ci/run-vkd3d-proton.sh /usr/local/bin/
 

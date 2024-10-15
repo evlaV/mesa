@@ -3,6 +3,8 @@
 
 set -ex
 
+source /usr/local/bin/setup-test-env.sh
+
 INSTALL=$(realpath -s "$PWD"/install)
 
 # Set up the driver environment.

@@ -3,6 +3,8 @@
 
 set -eux
 
+source /usr/local/bin/setup-test-env.sh
+
 VK_DRIVER=${VK_DRIVER:-radeon}
 DRIVER_NAME=${DRIVER_NAME:-radv}
 DEQP_VER=${DEQP_VER:-vk}
