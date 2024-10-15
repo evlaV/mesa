@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2035 # FIXME glob
 
-source /usr/local/bin/setup-test-env.sh
-
 set -ex
 
 INSTALL=$(realpath -s "$PWD"/install)
@@ -38,7 +36,7 @@ if ! /vkd3d-proton-tests/bin/d3d12 > "$RESULTS/vkd3d-proton.log";
 then
     # Check if the executable finished (ie. no segfault).
     if ! grep "tests executed" "$RESULTS/vkd3d-proton.log" > /dev/null; then
-        error printf "%s\n" "Failed, see vkd3d-proton.log!"
+        printf "%s\n" "Failed, see vkd3d-proton.log!"
         exit 1
     fi
 
@@ -58,7 +56,7 @@ then
 
     # Make sure that the failures found in this run match the current expectation
     if ! diff -q ".gitlab-ci/vkd3d-proton/$VKD3D_PROTON_RESULTS.txt.baseline" "$RESULTSFILE"; then
-        error printf "%s\n" "Changes found, see vkd3d-proton.log!"
+        printf "%s\n" "Changes found, see vkd3d-proton.log!"
         quiet diff --color=always -u ".gitlab-ci/vkd3d-proton/$VKD3D_PROTON_RESULTS.txt.baseline" "$RESULTSFILE" 2>&1
         exit 1
     fi
