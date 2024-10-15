@@ -147,7 +147,7 @@ jupiter-main-mesa:
     CI_TRON_LOG_LEVEL: 6
     CI_TRON_POWEROFF_DELAY: 15
     CI_TRON_SESSION_END_REGEX: '^.*It''s now safe to turn off your computer\r$'
-    CI_TRON_SESSION_REBOOT_REGEX: '(GPU hang detected!|\*ERROR\* Not enough memory for command submission!)'
+    CI_TRON_SESSION_REBOOT_REGEX: 'GPU hang detected!'
     CI_TRON_TIMEOUT_BOOT_MINUTES: 180
     CI_TRON_TIMEOUT_BOOT_RETRIES: 1
     CI_TRON_TIMEOUT_FIRST_MINUTES: 2
