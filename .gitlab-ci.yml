@@ -220,3 +220,43 @@ jupiter-main-vkcts-vangogh:
 jupiter-main-vkd3d-proton-vangogh:
   extends:
     - .test-vkd3d-proton
+
+
+# Navi21
+
+.navi21-test-valve:
+  tags:
+    - amdgpu:codename:NAVI21
+    - priority:low
+  variables:
+    CI_TRON_GPU_VERSION: radv-navi21-aco
+    CI_TRON_CI_JOB_CONCURRENCY: 32
+    CI_TRON_CMDLINE_EXTRAS: b2c.swap=16g
+
+jupiter-main-vkcts-navi21:
+  extends:
+    - .test-vkcts
+
+jupiter-main-vkd3d-proton-navi21:
+  extends:
+    - .test-vkd3d-proton
+
+
+# Navi31
+
+.navi31-test-valve:
+  tags:
+    - amdgpu:codename:NAVI31
+    - priority:low
+  variables:
+    CI_TRON_GPU_VERSION: radv-navi31-aco
+    CI_TRON_CI_JOB_CONCURRENCY: 32
+    CI_TRON_CMDLINE_EXTRAS: b2c.swap=16g
+
+jupiter-main-vkcts-navi31:
+  extends:
+    - .test-vkcts
+
+jupiter-main-vkd3d-proton-navi31:
+  extends:
+    - .test-vkd3d-proton
