@@ -41,6 +41,7 @@ stages:
   timeout: 2h
   tags:
     - CI-gateway
+    - cpu:cores:16+
   variables:
     # BASE_IMAGE:
     # IMAGE_NAME:
