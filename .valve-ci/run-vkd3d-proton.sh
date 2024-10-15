@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2035 # FIXME glob
 
-set -ex
-
 source /usr/local/bin/setup-test-env.sh
+
+set -ex
 
 INSTALL=$(realpath -s "$PWD"/install)
 

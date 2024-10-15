@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2086 # we want word splitting
 
-set -eux
-
 source /usr/local/bin/setup-test-env.sh
+
+set -eux
 
 VK_DRIVER=${VK_DRIVER:-radeon}
 DRIVER_NAME=${DRIVER_NAME:-radv}
