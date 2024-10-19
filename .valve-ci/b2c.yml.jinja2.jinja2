@@ -33,6 +33,9 @@ deployment:
   start:
     kernel:
       url: '{{ kernel_url | safe_quote }}'
+      # format:
+      #   archive:
+      #    match: usr/lib/modules/.*/vmlinuz
       cmdline:
         - SALAD.machine_id={{ '{{' }} machine_id }}
         - console={{ '{{' }} local_tty_device }},115200 earlyprintk=vga,keep
@@ -47,6 +50,31 @@ deployment:
         {% if cmdline_extras is defined %}
         - {{ cmdline_extras }}
         {% endif %}
-
     initramfs:
-      url: '{{ initramfs_url | safe_quote }}'
+      {% if ucode_url is defined %}
+      - url: '{{ ucode_url | safe_quote }}'
+        format:
+          archive:
+            match: boot/amd-ucode.img
+      {% endif %}
+
+      # B2C
+      - url: '{{ initramfs_url | safe_quote }}'
+
+      {% if firmware_url is defined %}
+      # Firmware
+      - url: '{{ firmware_url | safe_quote }}'
+        format:
+          archive:
+            extension: "cpio"
+            keep:
+              - path: usr/lib/firmware/amdgpu
+      {% endif %}
+
+      # Modules
+      # - url: '{{ kernel_url | safe_quote }}'
+      #  format:
+      #     archive:
+      #       extension: "cpio"
+      #       keep:
+      #         - path: usr/lib/modules/.*/(modules|kernel/(fs/(ext4|overlayfs)/|gpu/drm/)).*
