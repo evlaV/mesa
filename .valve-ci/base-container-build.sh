@@ -29,20 +29,8 @@ git config --global user.email "steamos@example.com"
 git config --global user.name "SteamOS CI"
 git clone https://github.com/KhronosGroup/VK-GL-CTS.git -b $DEQP_BRANCH --depth 1 /VK-GL-CTS
 
-vkcts_commits_to_backport=(
-    # Fix sync issues in copy and blit tests
-    24f214d80a866c04745f6c3b5027a4b540568598
-
-    # Don't access out-of-bounds per-vertex attributes
-    6e36996fdf38b91bd08b97c1aa8ddb7601e43aae
-
-    # Remove some of FDM + DRLR tests
-    d712381852e7f90cdd0a0bac5e43ac10d9bb5241
-)
-
 pushd /VK-GL-CTS
-cts_commits_to_backport="vkcts_commits_to_backport[@]"
-for commit in "${!cts_commits_to_backport}"
+for commit in ${DEQP_COMMITS_TO_BACKPORT:-""}
 do
   PATCH_URL="https://github.com/KhronosGroup/VK-GL-CTS/commit/$commit.patch"
   echo "Apply patch to VKCTS from $PATCH_URL"

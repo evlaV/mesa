@@ -21,24 +21,33 @@ workflow:
     - when: never
 
 # Run on all other branches, but the CI one
-.test-rules-base:
+.test-rules:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "ci"'
       when: never
 
-.test-rules:
-  extends:
-    - .test-rules-base
-  rules:
-    - !reference [.test-rules-base, rules]
-    - when: on_success
+    # Stable
+    - if: '$CI_COMMIT_BRANCH == "steamos-23.9"'
+      when: on_success
+      variables:
+        JUPITER_VERSION: "3.5"
+        BASE_IMAGE_TAG: !reference [jupiter-3.5-base, variables, IMAGE_TAG]
+        BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-3.5-base:$BASE_IMAGE_TAG
 
-.test-manual-rules:
-  extends:
-    - .test-rules-base
-  rules:
-    - !reference [.test-rules-base, rules]
-    - when: manual
+    # Beta
+    - if: '$CI_COMMIT_BRANCH == "steamos-24.4"'
+      when: on_success
+      variables:
+        JUPITER_VERSION: "3.6"
+        BASE_IMAGE_TAG: !reference [jupiter-3.6-base, variables, IMAGE_TAG]
+        BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-3.6-base:$BASE_IMAGE_TAG
+
+    # Default to main
+    - when: on_success
+      variables:
+        JUPITER_VERSION: "main"
+        BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
+        BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
 
 .container-build:
   image: quay.io/buildah/stable
@@ -74,7 +83,7 @@ workflow:
         dnf install -y git
         git fetch origin ci && git restore --source origin/ci .valve-ci
 
-        buildah run --isolation chroot --env DEQP_BRANCH=${DEQP_BRANCH:-} --env VKD3D_PROTON_COMMIT=${VKD3D_PROTON_COMMIT:-} --volume $PWD:/app/ --workingdir /app $buildcntr bash $BUILD_SCRIPT
+        buildah run --isolation chroot --env DEQP_BRANCH=${DEQP_BRANCH:-} --env VKD3D_PROTON_COMMIT=${VKD3D_PROTON_COMMIT:-} --env DEQP_COMMITS_TO_BACKPORT="${DEQP_COMMITS_TO_BACKPORT:-}" --volume $PWD:/app/ --workingdir /app $buildcntr bash $BUILD_SCRIPT
 
         buildah unmount $buildcntr
         buildah commit --format docker $buildcntr $IMAGE_LABEL
@@ -102,33 +111,49 @@ workflow:
     # job's one can't access the container registry of other private projects
     FROM_CONTAINER_REGISTRY_TOKEN: $STEAMOS_REGISTRY_TOKEN_RO
 
+
+jupiter-3.5-base:
+  extends:
+    - .base-container-build
+  variables:
+    BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-3.5/base-devel:latest
+    DEQP_BRANCH: vulkan-cts-1.3.8.0
+    DEQP_COMMITS_TO_BACKPORT: 4bbc98181f 0a4ddb79f3 30176295a2 dc448441db a9482fd387
+    VKD3D_PROTON_COMMIT: c3b385606a93baed42482d822805e0d9c2f3f603
+    IMAGE_TAG: "2024-10-16.1"
+
+jupiter-3.6-base:
+  extends:
+    - .base-container-build
+  variables:
+    BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-3.6/base-devel:latest
+    DEQP_BRANCH: vulkan-cts-1.3.8.0
+    DEQP_COMMITS_TO_BACKPORT: 4bbc98181f 0a4ddb79f3 30176295a2 dc448441db a9482fd387
+    VKD3D_PROTON_COMMIT: c3b385606a93baed42482d822805e0d9c2f3f603
+    IMAGE_TAG: "2024-10-16.1"
+
 jupiter-main-base:
-    extends:
-      - .base-container-build
-    variables:
-      BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-main/base-devel:latest
-      IMAGE_TAG: "2024-10-14-bump-everything"
-      DEQP_BRANCH: vulkan-cts-1.3.9.2
-      VKD3D_PROTON_COMMIT: 3d46c082906c77544385d10801e4c0184f0385d9
+  extends:
+    - .base-container-build
+  variables:
+    BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-main/base-devel:latest
+    DEQP_BRANCH: vulkan-cts-1.3.9.2
+    DEQP_COMMITS_TO_BACKPORT: 24f214d80a 6e36996fdf d712381852
+    VKD3D_PROTON_COMMIT: 3d46c082906c77544385d10801e4c0184f0385d9
+    IMAGE_TAG: "2024-10-16.1"
+
 
 # build stage
 
-.mesa-build:
+jupiter-mesa:
   stage: build
   extends:
     - .test-rules
     - .container-build
   variables:
     IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
-    IMAGE_NAME: $CI_JOB_NAME
+    IMAGE_NAME: $CI_JOB_NAME-$JUPITER_VERSION
     BUILD_SCRIPT: .valve-ci/mesa-build.sh
-
-jupiter-main-mesa:
-  extends:
-      - .mesa-build
-  variables:
-    BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
-    BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
 
 # RADV stage
 
@@ -160,8 +185,8 @@ jupiter-main-mesa:
     CI_TRON_TIMEOUT_OVERALL_MINUTES: 180
     CI_TRON_TIMEOUT_RETRIES: 1
     CI_TRON_JOB_VOLUME_EXCLUSIONS: "*.shader_cache,vkd3d-proton.cache*"
-    IMAGE_TAG: !reference [.mesa-build, variables, IMAGE_TAG]
-    IMAGE_NAME: !reference [.mesa-build, variables, IMAGE_NAME]
+    IMAGE_TAG: !reference [jupiter-mesa, variables, IMAGE_TAG]
+    IMAGE_NAME: !reference [jupiter-mesa, variables, IMAGE_NAME]
     IMAGE: "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${IMAGE_TAG}"
     RESULTS_FOLDER: "${CI_JOB_NAME}-results"
     GIT_STRATEGY: clone
@@ -182,26 +207,26 @@ jupiter-main-mesa:
 
 # Hardware jobs
 
-.jupiter-main-test:
+.jupiter-test:
   extends:
     - .test-rules
     - .executorctl_test
   needs:
-    - jupiter-main-mesa
+    - jupiter-mesa
   variables:
-    IMAGE_NAME: jupiter-main-mesa
+    IMAGE_NAME: jupiter-mesa
     CI_TRON_MUPUF_REGISTRY_USERNAME: ${MUPUF_REGISTRY_USERNAME}
     CI_TRON_MUPUF_REGISTRY_PASSWORD: ${MUPUF_REGISTRY_PASSWORD}
 
 .test-vkcts:
   extends:
-    - .jupiter-main-test
+    - .jupiter-test
   variables:
     CI_TRON_CONTAINER_CMD: run-vkcts.sh
 
 .test-vkd3d-proton:
   extends:
-    - .jupiter-main-test
+    - .jupiter-test
   variables:
     CI_TRON_CONTAINER_CMD: run-vkd3d-proton.sh
     CI_TRON_JOB_SUCCESS_REGEX: 'vkd3d-proton execution: SUCCESS\r$'
@@ -218,12 +243,12 @@ jupiter-main-mesa:
     CI_TRON_CI_JOB_CONCURRENCY: 8
     CI_TRON_CMDLINE_EXTRAS: amd_iommu=off amdgpu.gttsize=8128 b2c.swap=16g
 
-jupiter-main-vkcts-vangogh:
+jupiter-vkcts-vangogh:
   extends:
     - .test-vkcts
     - .vangogh-test-valve
 
-jupiter-main-vkd3d-proton-vangogh:
+jupiter-vkd3d-proton-vangogh:
   extends:
     - .test-vkd3d-proton
     - .vangogh-test-valve
@@ -240,12 +265,12 @@ jupiter-main-vkd3d-proton-vangogh:
     CI_TRON_CI_JOB_CONCURRENCY: 32
     CI_TRON_CMDLINE_EXTRAS: b2c.swap=16g
 
-jupiter-main-vkcts-navi21:
+jupiter-vkcts-navi21:
   extends:
     - .test-vkcts
     - .navi21-test-valve
 
-jupiter-main-vkd3d-proton-navi21:
+jupiter-vkd3d-proton-navi21:
   extends:
     - .test-vkd3d-proton
     - .navi21-test-valve
@@ -262,12 +287,12 @@ jupiter-main-vkd3d-proton-navi21:
     CI_TRON_CI_JOB_CONCURRENCY: 32
     CI_TRON_CMDLINE_EXTRAS: b2c.swap=16g
 
-jupiter-main-vkcts-navi31:
+jupiter-vkcts-navi31:
   extends:
     - .test-vkcts
     - .navi31-test-valve
 
-jupiter-main-vkd3d-proton-navi31:
+jupiter-vkd3d-proton-navi31:
   extends:
     - .test-vkd3d-proton
     - .navi31-test-valve
