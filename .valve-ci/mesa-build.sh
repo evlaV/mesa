@@ -7,13 +7,15 @@ CXXFLAGS+=' -g1'
 
 export CFLAGS CXXFLAGS
 
-# Compile libdrm
-git clone https://gitlab.freedesktop.org/mesa/drm.git drm
-pushd drm
-meson build --prefix=/usr -Dintel=disabled -Dradeon=disabled -Dnouveau=disabled -Dvmwgfx=disabled
-ninja -C build install
-popd
-rm -rf drm
+# Compile libdrm - disabled since we want to use system libraries as much as possible
+if [ "${COMPILE_LIBDRM_WITH_MESA:-0}" == '1' ]; then
+    git clone https://gitlab.freedesktop.org/mesa/drm.git drm
+    pushd drm
+    meson build --prefix=/usr -Dintel=disabled -Dradeon=disabled -Dnouveau=disabled -Dvmwgfx=disabled
+    ninja -C build install
+    popd
+    rm -rf drm
+fi
 
 # Install the expectations and execution scripts
 mkdir -p /mesa

@@ -33,6 +33,7 @@ workflow:
         JUPITER_VERSION: "3.5"
         BASE_IMAGE_TAG: !reference [jupiter-3.5-base, variables, IMAGE_TAG]
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-3.5-base:$BASE_IMAGE_TAG
+        COMPILE_LIBDRM_WITH_MESA: "0"
         # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.5/os/x86_64/linux-neptune-61-6.1.52.valve9-1-x86_64.pkg.tar.zst'
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.5/os/x86_64/linux-neptune-61-headers-6.1.52.valve16-1-x86_64.pkg.tar.zst'
         # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.5/os/x86_64/amd-ucode-jupiter.20231113.1-1-any.pkg.tar.zst'
@@ -44,6 +45,7 @@ workflow:
         JUPITER_VERSION: "3.6"
         BASE_IMAGE_TAG: !reference [jupiter-3.6-base, variables, IMAGE_TAG]
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-3.6-base:$BASE_IMAGE_TAG
+        COMPILE_LIBDRM_WITH_MESA: "0"
         # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/linux-neptune-65-6.5.0.valve20-1-x86_64.pkg.tar.zst'
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/linux-firmware-neptune-jupiter.20231113.1-1-any.pkg.tar.zst'
         # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/amd-ucode-jupiter.20231113.1-1-any.pkg.tar.zst'
@@ -54,6 +56,7 @@ workflow:
         JUPITER_VERSION: "main"
         BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
+        COMPILE_LIBDRM_WITH_MESA: "0"
         # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/linux-neptune-68-6.8.12.valve2-1-x86_64.pkg.tar.zst'
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/linux-firmware-neptune-jupiter.20240917.1-2-any.pkg.tar.zst'
         # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/amd-ucode-neptune-jupiter.20240917.1-2-any.pkg.tar.zst'
@@ -92,7 +95,7 @@ workflow:
         dnf install -y git
         git fetch origin ci && git restore --source origin/ci .valve-ci
 
-        buildah run --isolation chroot --env DEQP_BRANCH=${DEQP_BRANCH:-} --env VKD3D_PROTON_COMMIT=${VKD3D_PROTON_COMMIT:-} --env DEQP_COMMITS_TO_BACKPORT="${DEQP_COMMITS_TO_BACKPORT:-}" --volume $PWD:/app/ --workingdir /app $buildcntr bash $BUILD_SCRIPT
+        buildah run --isolation chroot --env DEQP_BRANCH=${DEQP_BRANCH:-} --env VKD3D_PROTON_COMMIT=${VKD3D_PROTON_COMMIT:-} --env DEQP_COMMITS_TO_BACKPORT="${DEQP_COMMITS_TO_BACKPORT:-}" --env COMPILE_LIBDRM_WITH_MESA=${COMPILE_LIBDRM_WITH_MESA:-0} --volume $PWD:/app/ --workingdir /app $buildcntr bash $BUILD_SCRIPT
 
         buildah unmount $buildcntr
         buildah commit --format docker $buildcntr $IMAGE_LABEL
