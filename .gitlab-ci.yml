@@ -3,12 +3,19 @@ stages:
 - build
 - RADV
 
+# Disable all unwanted pipelines
+workflow:
+  rules:
+    # Do not run on tags
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - when: always
 
 # Only run on the CI branch
 .base-containers-rules:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
     - if: '$CI_COMMIT_REF_NAME == "ci"'
       when: on_success
     - when: never
@@ -16,9 +23,6 @@ stages:
 # Run on all other branches, but the CI one
 .test-rules-base:
   rules:
-    # Do not run any job in the 'ci' branch, or if the farm is offline
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
     - if: '$CI_COMMIT_REF_NAME == "ci"'
       when: never
 
