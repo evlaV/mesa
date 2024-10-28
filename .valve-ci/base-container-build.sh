@@ -67,7 +67,7 @@ cargo install --root /usr/local deqp-runner
 pacman --noconfirm -R rust
 
 # Mesa dependencies
-pacman --noconfirm -Suy git openssh python-mako libxml2 libx11 xorgproto libdrm libxshmfence wayland wayland-protocols zstd elfutils llvm libunwind libxrandr valgrind meson glslang
+pacman --noconfirm -Suy git openssh python-mako libxml2 libx11 xorgproto libdrm libxshmfence wayland wayland-protocols zstd elfutils llvm libunwind libxrandr valgrind meson glslang python-yaml
 
 # Clear the caches
 pacman --noconfirm -Scc

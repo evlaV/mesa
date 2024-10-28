@@ -139,7 +139,7 @@ jupiter-main-base:
     DEQP_BRANCH: vulkan-cts-1.3.10.0
     DEQP_COMMITS_TO_BACKPORT: 8c95af68a2
     VKD3D_PROTON_COMMIT: 59d6d4b5ed23766e69fe252408a3401d2fd52ce8
-    IMAGE_TAG: "2024-10-28.1"
+    IMAGE_TAG: "2024-10-28.2"
 
 
 # build stage
