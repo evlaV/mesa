@@ -46,7 +46,7 @@ deployment:
         - 'b2c.minio="gateway,{{ '{{' }} minio_url }},{{ '{{' }} job_bucket_access_key }},{{ '{{' }} job_bucket_secret_key }}"'
         - 'b2c.volume="{{ '{{' }} job_bucket }}-job,mirror=gateway/{{ '{{' }} job_bucket }},pull_on=pipeline_start,push_on=changes,overwrite,preserve,expiration=pipeline_end{% for excl in job_volume_exclusions %},exclude={{ excl }}{% endfor %}"'
         - 'b2c.login="ci-gateway:8010,username={{mupuf_registry_username}},password={{mupuf_registry_password}},tls-verify=false"'
-        - 'b2c.run="-v {{ '{{' }} job_bucket }}-job:{{ working_dir | shlex_quote | safe_quote }} -w {{ working_dir | shlex_quote | safe_quote }} -e GPU_VERSION={{ gpu_version }} -e CI_JOB_CONCURRENCY={{ ci_job_concurrency }} -e ACO_DEBUG={{aco_debug}} -e RADV_PERF={{radv_perf}} -e RADV_DEBUG={{radv_debug}} --tls-verify=false docker://{{ local_container }} {{ container_cmd | shlex_quote | safe_quote }}"'
+        - 'b2c.run="-v {{ '{{' }} job_bucket }}-job:{{ working_dir | shlex_quote | safe_quote }} -w {{ working_dir | shlex_quote | safe_quote }} -e GPU_VERSION={{ gpu_version }} -e CI_JOB_CONCURRENCY={{ ci_job_concurrency }} -e ACO_DEBUG={{aco_debug}} -e RADV_PERFTEST={{radv_perftest}} -e RADV_DEBUG={{radv_debug}} --tls-verify=false docker://{{ local_container }} {{ container_cmd | shlex_quote | safe_quote }}"'
         {% if cmdline_extras is defined %}
         - {{ cmdline_extras }}
         {% endif %}
