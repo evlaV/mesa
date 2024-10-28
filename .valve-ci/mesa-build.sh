@@ -44,12 +44,11 @@ meson setup --prefix=/usr --buildtype=plain . build \
 -D android-libbacktrace=disabled \
 -D vulkan-drivers=amd \
 -D vulkan-layers= \
--D dri3=enabled \
 -D egl=disabled \
 -D gbm=disabled \
 -D gles1=disabled \
 -D gles2=disabled \
--D glvnd=false \
+-D glvnd=disabled \
 -D glx=disabled \
 -D libunwind=enabled \
 -D llvm=enabled \
