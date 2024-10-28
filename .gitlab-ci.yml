@@ -27,18 +27,6 @@ workflow:
       when: never
 
     # Stable
-    - if: '$CI_COMMIT_BRANCH == "steamos-23.9"'
-      when: on_success
-      variables:
-        JUPITER_VERSION: "3.5"
-        BASE_IMAGE_TAG: !reference [jupiter-3.5-base, variables, IMAGE_TAG]
-        BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-3.5-base:$BASE_IMAGE_TAG
-        COMPILE_LIBDRM_WITH_MESA: "0"
-        # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.5/os/x86_64/linux-neptune-61-6.1.52.valve9-1-x86_64.pkg.tar.zst'
-        # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.5/os/x86_64/linux-neptune-61-headers-6.1.52.valve16-1-x86_64.pkg.tar.zst'
-        # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.5/os/x86_64/amd-ucode-jupiter.20231113.1-1-any.pkg.tar.zst'
-
-    # Beta
     - if: '$CI_COMMIT_BRANCH == "steamos-24.4"'
       when: on_success
       variables:
@@ -122,17 +110,6 @@ workflow:
     # Use a read-only registry token to access the steamos image since the
     # job's one can't access the container registry of other private projects
     FROM_CONTAINER_REGISTRY_TOKEN: $STEAMOS_REGISTRY_TOKEN_RO
-
-
-jupiter-3.5-base:
-  extends:
-    - .base-container-build
-  variables:
-    BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-3.5/base-devel:latest
-    DEQP_BRANCH: vulkan-cts-1.3.8.0
-    DEQP_COMMITS_TO_BACKPORT: 4bbc98181f 0a4ddb79f3 30176295a2 dc448441db a9482fd387
-    VKD3D_PROTON_COMMIT: c3b385606a93baed42482d822805e0d9c2f3f603
-    IMAGE_TAG: "2024-10-16.1"
 
 jupiter-3.6-base:
   extends:
