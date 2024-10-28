@@ -194,6 +194,9 @@ jupiter-mesa:
     GIT_SUBMODULE_STRATEGY: none
   timeout: 3h10m
   script:
+    # Help debug what is going on
+    - env
+
     - apk add git
     - git fetch origin ci && git restore --source origin/ci .valve-ci
 
