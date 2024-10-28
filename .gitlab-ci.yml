@@ -160,6 +160,8 @@ jupiter-mesa:
   stage: RADV
   image: registry.freedesktop.org/gfx-ci/ci-tron/mesa-trigger:2023-06-02.1
   dependencies: []
+  extends:
+    - .test-rules
   artifacts:
     when: always
     paths:
