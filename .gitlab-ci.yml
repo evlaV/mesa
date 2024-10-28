@@ -38,6 +38,16 @@ workflow:
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/linux-firmware-neptune-jupiter.20231113.1-1-any.pkg.tar.zst'
         # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/amd-ucode-jupiter.20231113.1-1-any.pkg.tar.zst'
 
+    # Beta
+    # TODO: Create a new container when 3.7 gets branched
+    - if: '$CI_COMMIT_BRANCH == "steamos-24.11"'
+      when: on_success
+      variables:
+        JUPITER_VERSION: "main"
+        BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
+        BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
+        COMPILE_LIBDRM_WITH_MESA: "0"
+
     # Default to main
     - when: on_success
       variables:
