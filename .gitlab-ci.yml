@@ -200,11 +200,7 @@ jupiter-mesa:
     - apk add git
     - git fetch origin ci && git restore --source origin/ci .valve-ci
 
-    - python3 .valve-ci/generate_b2c.py \
-        --template .valve-ci/b2c.yml.jinja2.jinja2 \
-        --job-volume-exclusions "${CI_TRON_JOB_VOLUME_EXCLUSIONS}" \
-        --local-container="${IMAGE}" \
-        --working-dir "/job"
+    - python3 .valve-ci/generate_b2c.py --template .valve-ci/b2c.yml.jinja2.jinja2 --job-volume-exclusions "${CI_TRON_JOB_VOLUME_EXCLUSIONS}" --local-container="${IMAGE}" --working-dir "/job"
     - cat b2c.yml.jinja2
     - mkdir "${RESULTS_FOLDER}"
     - env PYTHONUNBUFFERED=1 executorctl run -w b2c.yml.jinja2 -s ${RESULTS_FOLDER}
