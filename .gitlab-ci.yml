@@ -193,7 +193,7 @@ jupiter-mesa:
     CI_TRON_TIMEOUT_MINUTES: 3
     CI_TRON_TIMEOUT_OVERALL_MINUTES: 180
     CI_TRON_TIMEOUT_RETRIES: 1
-    CI_TRON_JOB_VOLUME_EXCLUSIONS: "*.shader_cache,vkd3d-proton.cache*"
+    CI_TRON_JOB_VOLUME_EXCLUSIONS: "*.shader_cache,vkd3d-proton.cache*,*.qpa"
     IMAGE: "${CI_REGISTRY_IMAGE}/jupiter-mesa-${JUPITER_VERSION}:${CI_COMMIT_SHORT_SHA}"
     RESULTS_FOLDER: "${CI_JOB_NAME}-results"
     GIT_STRATEGY: clone
