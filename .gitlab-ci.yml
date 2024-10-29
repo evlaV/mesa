@@ -293,6 +293,8 @@ jupiter-vkd3d-proton-navi21:
     CI_TRON_CMDLINE_EXTRAS: b2c.swap=16g
     CI_TRON_RADV_DEBUG: nomeshshader
 
+    CI_TRON_KERNEL_URL: https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.12.2/downloads/linux-x86_64
+
 jupiter-vkcts-navi31:
   extends:
     - .test-vkcts
