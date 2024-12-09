@@ -146,7 +146,7 @@ jupiter-main-base:
   variables:
     BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-main/base-devel:latest
     DEQP_BRANCH: a9f7069b9a5ba94715a175cb1818ed504add0107
-    DEQP_COMMITS_TO_BACKPORT: ""
+    DEQP_COMMITS_TO_BACKPORT:
     VKD3D_PROTON_COMMIT: 59d6d4b5ed23766e69fe252408a3401d2fd52ce8
     IMAGE_TAG: "2024-12-09.1"
 

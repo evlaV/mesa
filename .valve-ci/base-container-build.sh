@@ -33,7 +33,7 @@ pushd /VK-GL-CTS
 git remote add origin https://github.com/KhronosGroup/VK-GL-CTS.git
 git fetch origin $DEQP_BRANCH --depth 1
 git reset --hard $DEQP_BRANCH
-for commit in ${DEQP_COMMITS_TO_BACKPORT:-""}
+for commit in ${DEQP_COMMITS_TO_BACKPORT:-}
 do
   PATCH_URL="https://github.com/KhronosGroup/VK-GL-CTS/commit/$commit.patch"
   echo "Apply patch to VKCTS from $PATCH_URL"
