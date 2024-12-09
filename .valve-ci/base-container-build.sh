@@ -27,9 +27,12 @@ pacman --noconfirm -Suy git ninja cmake python3 libx11 libglvnd
 
 git config --global user.email "steamos@example.com"
 git config --global user.name "SteamOS CI"
-git clone https://github.com/KhronosGroup/VK-GL-CTS.git -b $DEQP_BRANCH --depth 1 /VK-GL-CTS
+git init /VK-GL-CTS
 
 pushd /VK-GL-CTS
+git remote add origin https://github.com/KhronosGroup/VK-GL-CTS.git
+git fetch origin $DEQP_BRANCH --depth 1
+git reset --hard $DEQP_BRANCH
 for commit in ${DEQP_COMMITS_TO_BACKPORT:-""}
 do
   PATCH_URL="https://github.com/KhronosGroup/VK-GL-CTS/commit/$commit.patch"
