@@ -167,7 +167,7 @@ jupiter-mesa:
 
 .executorctl_test:
   stage: RADV
-  image: registry.freedesktop.org/gfx-ci/ci-tron/mesa-trigger:2023-06-02.1
+  image: registry.freedesktop.org/gfx-ci/ci-tron/mesa-trigger:latest
   dependencies: []
   extends:
     - .test-rules
