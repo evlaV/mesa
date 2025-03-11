@@ -813,6 +813,9 @@
                         "Choose the specific HiZ workaround to apply on GFX12 (RDNA4). " \
                         "Accepted values are: disabled, partial or full")
 
+#define DRI_CONF_RADV_DISABLE_NGG_CULLING(def) \
+   DRI_CONF_OPT_B(radv_disable_ngg_culling, def, "Disable NGG culling on GFX10.3.")
+
 /**
  * \brief ANV specific configuration options
  */

@@ -163,6 +163,7 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_RADV_CLEAR_LDS(false)
       DRI_CONF_RADV_DISABLE_NGG_GS(false)
       DRI_CONF_RADV_GFX12_HIZ_WA()
+      DRI_CONF_RADV_DISABLE_NGG_CULLING(false)
    DRI_CONF_SECTION_END
 
    DRI_CONF_SECTION_DEBUG
@@ -247,6 +248,9 @@ radv_init_dri_debug_options(struct radv_instance *instance)
 
    if (driQueryOptionb(&drirc->options, "radv_rt_wave64"))
       instance->perftest_flags |= RADV_PERFTEST_RT_WAVE_64;
+
+   if (driQueryOptionb(&instance->drirc.options, "radv_disable_ngg_culling"))
+      instance->debug_flags |= RADV_DEBUG_NO_NGGC;
 }
 
 static void
