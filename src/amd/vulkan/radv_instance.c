@@ -163,6 +163,7 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_RADV_OVERRIDE_UNIFORM_OFFSET_ALIGNMENT(0)
       DRI_CONF_RADV_CLEAR_LDS(false)
       DRI_CONF_RADV_DISABLE_NGG_GS(false)
+      DRI_CONF_RADV_DISABLE_NGG_CULLING(false)
    DRI_CONF_SECTION_END
 
    DRI_CONF_SECTION_DEBUG
@@ -229,6 +230,9 @@ radv_init_dri_options(struct radv_instance *instance)
 
    if (driQueryOptionb(&instance->drirc.options, "radv_disable_ngg_gs"))
       instance->debug_flags |= RADV_DEBUG_NO_NGG_GS;
+
+   if (driQueryOptionb(&instance->drirc.options, "radv_disable_ngg_culling"))
+      instance->debug_flags |= RADV_DEBUG_NO_NGGC;
 
    instance->drirc.clear_lds = driQueryOptionb(&instance->drirc.options, "radv_clear_lds");
 
