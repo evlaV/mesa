@@ -554,6 +554,61 @@ encode_sbt_offset_and_flags(uint32_t src)
    return ret;
 }
 
+mat3 abs(mat3 in_mat) {
+   return mat3(abs(in_mat[0]), abs(in_mat[1]), abs(in_mat[2]));
+}
+
+void
+update_instance_aabb(inout radv_aabb instance_aabb, radv_aabb blas_aabb, mat3x4 transform)
+{
+   /* https://zeux.io/2010/10/17/aabb-from-obb-with-component-wise-abs */
+   vec3 blas_aabb_center = (blas_aabb.max + blas_aabb.min) / 2.0;
+   vec3 blas_aabb_extent = (blas_aabb.max - blas_aabb.min) / 2.0;
+
+   blas_aabb_center = vec4(blas_aabb_center, 1.0f) * transform;
+   blas_aabb_extent = blas_aabb_extent * abs(mat3(transform));
+
+   instance_aabb.min = min(instance_aabb.min, blas_aabb_center - blas_aabb_extent);
+   instance_aabb.max = max(instance_aabb.max, blas_aabb_center + blas_aabb_extent);
+}
+
+radv_aabb
+calculate_fine_instance_node_bounds(VOID_REF bvh, mat3x4 transform)
+{
+   REF(radv_accel_struct_header) header = REF(radv_accel_struct_header)(bvh);
+   bvh = OFFSET(bvh, DEREF(header).bvh_offset);
+   REF(radv_bvh_box32_node) root = REF(radv_bvh_box32_node)(bvh);
+
+   uint32_t children[4] = DEREF(root).children;
+
+   radv_aabb aabb;
+   aabb.min = vec3(INFINITY);
+   aabb.max = vec3(-INFINITY);
+   if (children[0] == 0xFFFFFFFF) {
+      aabb.min = vec3(NAN);
+      aabb.max = vec3(NAN);
+   }
+
+   for (uint32_t child_idx = 0; child_idx < 4; ++child_idx) {
+      if (children[child_idx] == 0xFFFFFFFF)
+         break;
+      if (id_to_type(children[child_idx]) != radv_bvh_node_box32) {
+         update_instance_aabb(aabb, DEREF(root).coords[child_idx], transform);
+         continue;
+      }
+
+      radv_bvh_box32_node node = DEREF(REF(radv_bvh_box32_node)OFFSET(bvh, id_to_offset(children[child_idx])));
+
+      for (uint32_t grandchild_idx = 0; grandchild_idx < 4; ++grandchild_idx) {
+         if (node.children[grandchild_idx] == 0xFFFFFFFF)
+            break;
+         update_instance_aabb(aabb, node.coords[grandchild_idx], transform);
+      }
+   }
+
+   return aabb;
+}
+
 bool
 build_instance(inout radv_aabb bounds, VOID_REF src_ptr, VOID_REF dst_ptr, uint32_t global_id)
 {
@@ -579,6 +634,21 @@ build_instance(inout radv_aabb bounds, VOID_REF src_ptr, VOID_REF dst_ptr, uint3
    DEREF(node).otw_matrix = mat3x4(transform);
 
    bounds = calculate_instance_node_bounds(instance_header, mat3x4(transform));
+
+   vec3 blas_aabb_extent = instance_header.aabb.max - instance_header.aabb.min;
+   float blas_aabb_volume = blas_aabb_extent.x * blas_aabb_extent.y * blas_aabb_extent.z;
+   blas_aabb_volume *= abs(determinant(mat3(transform)));
+
+   vec3 bounds_extent = bounds.max - bounds.min;
+   float bounds_volume = bounds_extent.x * bounds_extent.y * bounds_extent.z;
+
+   /* Only try calculating finer-grained instance node bounds if the volume of the transformed
+    * instance AABB is significantly higher than the volume of the BLAS without transformations
+    * applied. Otherwise, the finer-grained bounds won't be much smaller and the additional overhead
+    * wouldn't be worth it.
+    */
+   if (bounds_volume > 1.4f * blas_aabb_volume)
+      bounds = calculate_fine_instance_node_bounds(instance.accelerationStructureReference, mat3x4(transform));
 
    DEREF(node).custom_instance_and_mask = instance.custom_instance_and_mask;
    DEREF(node).sbt_offset_and_flags = encode_sbt_offset_and_flags(instance.sbt_offset_and_flags);
