@@ -40,7 +40,6 @@ meson setup --prefix=/usr --buildtype=plain . build \
 -D gallium-drivers= \
 -D gallium-vdpau=disabled \
 -D gallium-va=disabled \
--D gallium-xa=disabled \
 -D android-libbacktrace=disabled \
 -D vulkan-drivers=amd \
 -D vulkan-layers= \
