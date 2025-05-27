@@ -244,7 +244,7 @@ jupiter-mesa:
 .vangogh-test-valve:
   tags:
     - amdgpu:codename:VANGOGH
-    - priority:low
+    - ci-tron:priority:low
   variables:
     CI_TRON_GPU_VERSION: radv-vangogh-aco
     CI_TRON_CI_JOB_CONCURRENCY: 8
