@@ -30,22 +30,22 @@ workflow:
       when: never
 
     # Stable
-    - if: '$CI_COMMIT_BRANCH == "steamos-24.4"'
+    - if: '$CI_COMMIT_BRANCH == "steamos-24.11"'
       when: on_success
       variables:
-        JUPITER_VERSION: "3.6"
-        BASE_IMAGE_TAG: !reference [jupiter-3.6-base, variables, IMAGE_TAG]
-        BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-3.6-base:$BASE_IMAGE_TAG
+        JUPITER_VERSION: "3.7"
+        BASE_IMAGE_TAG: !reference [jupiter-3.7-base, variables, IMAGE_TAG]
+        BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-3.7-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
-        CI_TRON_RADV_PERFTEST: ""
+        CI_TRON_RADV_PERFTEST: "transfer_queue"
         CI_TRON_KERNEL_URL: https://fs.mupuf.org/linux-6.6-b2c-radv-ci
         # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/linux-neptune-65-6.5.0.valve20-1-x86_64.pkg.tar.zst'
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/linux-firmware-neptune-jupiter.20231113.1-1-any.pkg.tar.zst'
         # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/amd-ucode-jupiter.20231113.1-1-any.pkg.tar.zst'
 
     # Beta
-    # TODO: Create a new container when 3.7 gets branched
-    - if: '$CI_COMMIT_BRANCH == "steamos-24.11"'
+    # TODO: Create a new container when 3.8 gets branched
+    - if: '$CI_COMMIT_BRANCH == "steamos-25.6"'
       when: on_success
       variables:
         JUPITER_VERSION: "main"
@@ -130,25 +130,25 @@ workflow:
     # job's one can't access the container registry of other private projects
     FROM_CONTAINER_REGISTRY_TOKEN: $STEAMOS_REGISTRY_TOKEN_RO
 
-jupiter-3.6-base:
+jupiter-3.7-base:
   extends:
     - .base-container-build
   variables:
-    BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-3.6/base-devel:latest
-    DEQP_BRANCH: vulkan-cts-1.3.8.0
-    DEQP_COMMITS_TO_BACKPORT: 4bbc98181f 0a4ddb79f3 30176295a2 dc448441db a9482fd387
-    VKD3D_PROTON_COMMIT: c3b385606a93baed42482d822805e0d9c2f3f603
-    IMAGE_TAG: "2024-10-16.1"
+    BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-3.7/base-devel:latest
+    DEQP_BRANCH: a9f7069b9a5ba94715a175cb1818ed504add0107
+    DEQP_COMMITS_TO_BACKPORT:
+    VKD3D_PROTON_COMMIT: 59d6d4b5ed23766e69fe252408a3401d2fd52ce8
+    IMAGE_TAG: "2025-05-27.1"
 
 jupiter-main-base:
   extends:
     - .base-container-build
   variables:
     BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-main/base-devel:latest
-    DEQP_BRANCH: a9f7069b9a5ba94715a175cb1818ed504add0107
+    DEQP_BRANCH: f66e0ae866117f3d7375763bf5ec194404d88cdb
     DEQP_COMMITS_TO_BACKPORT:
-    VKD3D_PROTON_COMMIT: 59d6d4b5ed23766e69fe252408a3401d2fd52ce8
-    IMAGE_TAG: "2024-12-09.2"
+    VKD3D_PROTON_COMMIT: 7e829e88364f9429596b14d0c0ea0205e1337edc
+    IMAGE_TAG: "2025-05-27.1"
 
 
 # build stage
