@@ -39,6 +39,7 @@ workflow:
         COMPILE_LIBDRM_WITH_MESA: "0"
         CI_TRON_RADV_PERFTEST: "transfer_queue"
         CI_TRON_KERNEL_URL: https://fs.mupuf.org/linux-6.6-b2c-radv-ci
+        GPU_VERSION_SUFFIX: -aco
         # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/linux-neptune-65-6.5.0.valve20-1-x86_64.pkg.tar.zst'
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/linux-firmware-neptune-jupiter.20231113.1-1-any.pkg.tar.zst'
         # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/amd-ucode-jupiter.20231113.1-1-any.pkg.tar.zst'
@@ -246,7 +247,7 @@ jupiter-mesa:
     - amdgpu:codename:VANGOGH
     - ci-tron:priority:low
   variables:
-    CI_TRON_GPU_VERSION: radv-vangogh-aco
+    CI_TRON_GPU_VERSION: radv-vangogh$GPU_VERSION_SUFFIX
     CI_TRON_CI_JOB_CONCURRENCY: 8
     CI_TRON_CMDLINE_EXTRAS: amd_iommu=off amdgpu.gttsize=8128 b2c.swap=16g
 
@@ -268,7 +269,7 @@ jupiter-vkd3d-proton-vangogh:
     - amdgpu:codename:NAVI21
     - priority:low
   variables:
-    CI_TRON_GPU_VERSION: radv-navi21-aco
+    CI_TRON_GPU_VERSION: radv-navi21$GPU_VERSION_SUFFIX
     CI_TRON_CI_JOB_CONCURRENCY: 32
     CI_TRON_CMDLINE_EXTRAS: b2c.swap=16g
 
@@ -290,7 +291,7 @@ jupiter-vkd3d-proton-navi21:
     - amdgpu:codename:NAVI31
     - priority:low
   variables:
-    CI_TRON_GPU_VERSION: radv-navi31-aco
+    CI_TRON_GPU_VERSION: radv-navi31$GPU_VERSION_SUFFIX
     CI_TRON_CI_JOB_CONCURRENCY: 32
     CI_TRON_CMDLINE_EXTRAS: b2c.swap=16g
     CI_TRON_RADV_DEBUG: nomeshshader
