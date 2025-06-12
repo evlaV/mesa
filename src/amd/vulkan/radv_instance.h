@@ -50,7 +50,6 @@ struct radv_drirc {
       bool enable_mrt_output_nan_fixup;
       bool flush_before_query_copy;
       bool flush_before_timestamp_write;
-      bool invariant_geom;
       bool lower_terminate_to_discard;
       bool no_dynamic_bounds;
       bool split_fma;

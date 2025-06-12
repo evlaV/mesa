@@ -175,7 +175,6 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_VK_REQUIRE_ETC2(false)
       DRI_CONF_VK_REQUIRE_ASTC(false)
       DRI_CONF_RADV_ZERO_VRAM(false)
-      DRI_CONF_RADV_INVARIANT_GEOM(false)
       DRI_CONF_RADV_SPLIT_FMA(false)
       DRI_CONF_RADV_DISABLE_TC_COMPAT_HTILE_GENERAL(false)
       DRI_CONF_RADV_DISABLE_DCC(false)
@@ -229,7 +228,6 @@ radv_init_dri_debug_options(struct radv_instance *instance)
    drirc->debug.enable_mrt_output_nan_fixup = driQueryOptionb(&drirc->options, "radv_enable_mrt_output_nan_fixup");
    drirc->debug.flush_before_query_copy = driQueryOptionb(&drirc->options, "radv_flush_before_query_copy");
    drirc->debug.flush_before_timestamp_write = driQueryOptionb(&drirc->options, "radv_flush_before_timestamp_write");
-   drirc->debug.invariant_geom = driQueryOptionb(&drirc->options, "radv_invariant_geom");
    drirc->debug.lower_terminate_to_discard = driQueryOptionb(&drirc->options, "vk_lower_terminate_to_discard");
    drirc->debug.no_dynamic_bounds = driQueryOptionb(&drirc->options, "radv_no_dynamic_bounds");
    drirc->debug.split_fma = driQueryOptionb(&drirc->options, "radv_split_fma");

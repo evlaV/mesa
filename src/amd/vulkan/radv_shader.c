@@ -600,7 +600,7 @@ radv_shader_spirv_to_nir(struct radv_device *device, const struct radv_shader_st
 
       NIR_PASS(_, nir, nir_lower_vars_to_ssa);
 
-      NIR_PASS(_, nir, nir_propagate_invariant, pdev->cache_key.invariant_geom);
+      NIR_PASS(_, nir, nir_propagate_invariant, true);
 
       NIR_PASS(_, nir, nir_lower_clip_cull_distance_array_vars);
 
