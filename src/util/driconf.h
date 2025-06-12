@@ -686,10 +686,6 @@
    DRI_CONF_OPT_B(radv_zero_vram, def, \
                   "Initialize to zero all VRAM allocations")
 
-#define DRI_CONF_RADV_INVARIANT_GEOM(def) \
-   DRI_CONF_OPT_B(radv_invariant_geom, def, \
-                  "Mark geometry-affecting outputs as invariant")
-
 #define DRI_CONF_RADV_SPLIT_FMA(def) \
    DRI_CONF_OPT_B(radv_split_fma, def, \
                   "Split application-provided fused multiply-add in geometry stages")
