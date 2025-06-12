@@ -538,13 +538,12 @@ struct radv_compiler_info {
       uint32_t disable_trunc_coord : 1;
       uint32_t enable_mrt_output_nan_fixup : 1;
       uint32_t emulate_rt : 1;
-      uint32_t invariant_geom : 1;
       uint32_t split_fma : 1;
       uint32_t ssbo_non_uniform : 1;
       uint32_t tex_non_uniform : 1;
       uint32_t lower_terminate_to_discard : 1;
       uint32_t no_implicit_varying_subgroup_size : 1;
-      uint32_t padding : 31;
+      uint32_t padding : 32;
 
       int32_t force_aniso;
 
