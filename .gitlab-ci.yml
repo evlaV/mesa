@@ -199,8 +199,8 @@ jupiter-mesa:
     CI_TRON_INITRAMFS__B2C__URL: 'https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.12.1/downloads/initramfs.linux_amd64.cpio.xz'
     CI_TRON_PATTERN__SESSION_END__REGEX: '^.*It''s now safe to turn off your computer\r$'
     CI_TRON_PATTERN__JOB_SUCCESS__REGEX: 'Execution is over, pipeline status: 0\r$'
-    CI_TRON_PATTERN__JOB_WARNING__REGEX: 'null'
-    CI_TRON_PATTERN__JOB_REBOOT__REGEX: 'GPU hang detected!'
+    CI_TRON_PATTERN__JOB_WARN__REGEX: ''
+    CI_TRON_PATTERN__SESSION_REBOOT__REGEX: 'GPU hang detected!'
 
     CI_TRON_TIMEOUT__BOOT_CYCLE__MINUTES: 180
     CI_TRON_TIMEOUT__BOOT_CYCLE__RETRIES: 1
