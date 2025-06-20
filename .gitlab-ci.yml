@@ -62,7 +62,7 @@ workflow:
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
         CI_TRON_RADV_PERFTEST: "transfer_queue,video_decode,video_encode"
-        CI_TRON_KERNEL_URL: https://fs.mupuf.org/linux-6.6-b2c-radv-ci
+        CI_TRON_KERNEL__URL: https://fs.mupuf.org/linux-6.6-b2c-radv-ci
 
     # Default to main
     - when: on_success
@@ -71,8 +71,8 @@ workflow:
         BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
-        CI_TRON_RADV_PERFTEST: "transfer_queue,video_decode,video_encode"
-        CI_TRON_KERNEL_URL: https://fs.mupuf.org/linux-6.6-b2c-radv-ci
+        RADV_PERFTEST: "transfer_queue,video_decode,video_encode"
+        CI_TRON_KERNEL__URL: https://fs.mupuf.org/linux-6.6-b2c-radv-ci
         # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/linux-neptune-68-6.8.12.valve2-1-x86_64.pkg.tar.zst'
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/linux-firmware-neptune-jupiter.20240917.1-2-any.pkg.tar.zst'
         # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/amd-ucode-neptune-jupiter.20240917.1-2-any.pkg.tar.zst'
