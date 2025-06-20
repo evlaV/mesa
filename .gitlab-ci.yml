@@ -219,7 +219,7 @@ jupiter-mesa:
   # Download the content of the `.valve-ci/` folder in the `ci` branch
   before_script:
     - apk add git
-    - git fetch origin ci && git restore --source origin/ci .valve-ci
+    - git clone -b ci ${CI_REPOSITORY_URL} .
 
 # Hardware jobs
 
