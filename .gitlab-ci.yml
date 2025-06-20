@@ -214,7 +214,7 @@ jupiter-mesa:
     CI_TRON_KERNEL_CMDLINE__NO_HASH_POINTERS: no_hash_pointers
 
     CI_TRON__B2C_ARTIFACT_EXCLUSION: "*.shader_cache,vkd3d-proton.cache*,*.qpa"
-    CI_TRON__B2C_IMAGE__IMAGE_UNDER_TEST: '{{ registry.to_local_proxy("${CI_REGISTRY_IMAGE}/jupiter-mesa-${JUPITER_VERSION}:${CI_COMMIT_SHORT_SHA}") }}'
+    CI_TRON__B2C_IMAGE__IMAGE_UNDER_TEST: "{{ registry.to_local_proxy('${CI_REGISTRY_IMAGE}/jupiter-mesa-${JUPITER_VERSION}:${CI_COMMIT_SHORT_SHA}') }}"
 
   # Download the content of the `.valve-ci/` folder in the `ci` branch
   before_script:
