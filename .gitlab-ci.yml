@@ -62,9 +62,9 @@ workflow:
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
         CI_TRON_RADV_PERFTEST: "transfer_queue,video_decode,video_encode"
-        CI_TRON_KERNEL__URL: https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.16/downloads/linux-x86_64
-        CI_TRON_INITRAMFS__DEPMOD__URL: https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.16/downloads/linux-x86_64.depmod.cpio.xz
-        CI_TRON_INITRAMFS__GPU__URL: https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.16/downloads/linux-x86_64.gpu.cpio
+        CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.14.8/linux-x86_64
+        CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.14.8/linux-x86_64.depmod.cpio.xz
+        CI_TRON_INITRAMFS__GPU__URL: https://fs.mupuf.org/radv/linux-6.14.8/linux-x86_64.gpu.cpio
         CI_TRON_KERNEL_CMDLINE__LOAD_MODULES: 'modules_load=amdgpu'
 
     # Default to main
@@ -75,9 +75,9 @@ workflow:
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
         RADV_PERFTEST: "transfer_queue,video_decode,video_encode"
-        CI_TRON_KERNEL__URL: https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.16/downloads/linux-x86_64
-        CI_TRON_INITRAMFS__DEPMOD__URL: https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.16/downloads/linux-x86_64.depmod.cpio.xz
-        CI_TRON_INITRAMFS__GPU__URL: https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.16/downloads/linux-x86_64.gpu.cpio
+        CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.14.8/linux-x86_64
+        CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.14.8/linux-x86_64.depmod.cpio.xz
+        CI_TRON_INITRAMFS__GPU__URL: https://fs.mupuf.org/radv/linux-6.14.8/linux-x86_64.gpu.cpio
         CI_TRON_KERNEL_CMDLINE__LOAD_MODULES: 'modules_load=amdgpu'
         # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/linux-neptune-68-6.8.12.valve2-1-x86_64.pkg.tar.zst'
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/linux-firmware-neptune-jupiter.20240917.1-2-any.pkg.tar.zst'
