@@ -54,7 +54,7 @@ workflow:
 
     # Beta
     # TODO: Create a new container when 3.8 gets branched
-    - if: '$CI_COMMIT_BRANCH == "steamos-25.6"'
+    - if: '$CI_COMMIT_BRANCH == "steamos-25.8"'
       when: on_success
       variables:
         JUPITER_VERSION: "main"
