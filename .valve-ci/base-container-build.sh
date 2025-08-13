@@ -23,7 +23,7 @@ rm -rf /vkd3d-proton-src
 echo "Building '$DEQP_BRANCH'"
 
 # Install VKCTS dependencies
-pacman --noconfirm -Suy git ninja cmake python3 libx11 libglvnd
+pacman --noconfirm -Suy git ninja cmake python3 libx11 libglvnd vulkan-tools
 
 git config --global user.email "steamos@example.com"
 git config --global user.name "SteamOS CI"
