@@ -52,7 +52,6 @@ meson setup --prefix=/usr --buildtype=plain . build \
 -D libunwind=enabled \
 -D llvm=enabled \
 -D lmsensors=disabled \
--D osmesa=false \
 -D microsoft-clc=disabled \
 -D valgrind=enabled \
 -D radv-build-id="0fc57c2cf625a235fe81e41877a40609c43e451a"
