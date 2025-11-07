@@ -54,7 +54,7 @@ workflow:
 
     # Beta
     # TODO: Create a new container when 3.8 gets branched
-    - if: '$CI_COMMIT_BRANCH == "steamos-25.8"'
+    - if: '$CI_COMMIT_BRANCH == "steamos-25.11"'
       when: on_success
       variables:
         JUPITER_VERSION: "main"
@@ -62,9 +62,9 @@ workflow:
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
         CI_TRON_RADV_PERFTEST: "transfer_queue,video_decode,video_encode"
-        CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.15.9/linux-x86_64
-        CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.15.9/linux-x86_64.depmod.cpio.xz
-        CI_TRON_INITRAMFS__GPU__URL: https://fs.mupuf.org/radv/linux-6.15.9/linux-x86_64.gpu.cpio
+        CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64
+        CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.depmod.cpio.xz
+        CI_TRON_INITRAMFS__GPU__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.gpu.cpio
         CI_TRON_KERNEL_CMDLINE__LOAD_MODULES: 'modules_load=amdgpu'
 
     # Default to main
@@ -75,9 +75,9 @@ workflow:
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
         RADV_PERFTEST: "transfer_queue,video_decode,video_encode"
-        CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.15.9/linux-x86_64
-        CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.15.9/linux-x86_64.depmod.cpio.xz
-        CI_TRON_INITRAMFS__GPU__URL: https://fs.mupuf.org/radv/linux-6.15.9/linux-x86_64.gpu.cpio
+        CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64
+        CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.depmod.cpio.xz
+        CI_TRON_INITRAMFS__GPU__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.gpu.cpio
         CI_TRON_KERNEL_CMDLINE__LOAD_MODULES: 'modules_load=amdgpu'
         # CI_TRON_KERNEL_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/linux-neptune-68-6.8.12.valve2-1-x86_64.pkg.tar.zst'
         # CI_TRON_FIRMWARE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main/os/x86_64/linux-firmware-neptune-jupiter.20240917.1-2-any.pkg.tar.zst'
@@ -202,7 +202,7 @@ jupiter-mesa:
     # Save the job script so that it can be used for local testing and analysis when things go wrong
     CI_TRON_JOB_SCRIPT_PATH: "job_script.sh"
 
-    CI_TRON_INITRAMFS__B2C__URL: 'https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.12.1/downloads/initramfs.linux_amd64.cpio.xz'
+    CI_TRON_INITRAMFS__B2C__URL: 'https://gitlab.freedesktop.org/gfx-ci/boot2container/-/releases/v0.9.18/downloads/initramfs.linux_amd64.cpio.xz'
     CI_TRON_PATTERN__SESSION_END__REGEX: '^.*It''s now safe to turn off your computer\r$'
     CI_TRON_PATTERN__JOB_SUCCESS__REGEX: 'Execution is over, pipeline status: 0\r$'
     CI_TRON_PATTERN__JOB_WARN__REGEX: ''
