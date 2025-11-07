@@ -280,7 +280,7 @@ jupiter-vkd3d-proton-vangogh:
 .navi21-test-valve:
   tags:
     - amdgpu:codename:NAVI21
-    - priority:low
+    - ci-tron:priority:low
   variables:
     GPU_VERSION: radv-navi21$GPU_VERSION_SUFFIX
     CI_JOB_CONCURRENCY: 32
@@ -301,7 +301,7 @@ jupiter-vkd3d-proton-navi21:
 .navi31-test-valve:
   tags:
     - amdgpu:codename:NAVI31
-    - priority:low
+    - ci-tron:priority:low
   variables:
     GPU_VERSION: radv-navi31$GPU_VERSION_SUFFIX
     CI_JOB_CONCURRENCY: 32
