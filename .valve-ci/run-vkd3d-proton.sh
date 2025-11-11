@@ -10,15 +10,8 @@ comma_separated() {
   echo "$*"
 }
 
-if [[ -z "$VK_DRIVER" ]]; then
-    printf "VK_DRIVER is not defined\n"
-    exit 1
-fi
-
-if [ -z "$VKD3D_PROTON_TAG" ]; then
-    echo "VKD3D_PROTON_TAG must be set to the conditional build tag"
-    exit 1
-fi
+VK_DRIVER=${VK_DRIVER:-radeon}
+DRIVER_NAME=${DRIVER_NAME:-radv}
 
 # Are we using the right vkd3d-proton version?
 # ci_tag_test_time_check "VKD3D_PROTON_TAG"
