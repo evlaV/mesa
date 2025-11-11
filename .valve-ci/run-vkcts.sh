@@ -34,8 +34,11 @@ EXPECTATIONS_FOLDER=/mesa
 
 DEQP_RUNNER_OPTIONS="--tests-per-group 5000"
 
-if [ -e "$EXPECTATIONS_FOLDER/$GPU_VERSION-fails.txt" ]; then
-    DEQP_RUNNER_OPTIONS="$DEQP_RUNNER_OPTIONS --baseline $EXPECTATIONS_FOLDER/$GPU_VERSION-fails.txt"
+# Default to an empty known flakes file if it doesn't exist.
+touch $EXPECTATIONS_FOLDER/$GPU_VERSION-fails.txt
+
+if [ -e "$EXPECTATIONS_FOLDER/${DRIVER_NAME}-fails.txt" ]; then
+    cat "$EXPECTATIONS_FOLDER/${DRIVER_NAME}-fails.txt" >> "$EXPECTATIONS_FOLDER/$GPU_VERSION-fails.txt"
 fi
 
 # Default to an empty known flakes file if it doesn't exist.
@@ -60,6 +63,7 @@ deqp-runner \
     --deqp $DEQP \
     --output $RESULTS \
     --caselist $MUSTPASS \
+    --baseline $EXPECTATIONS_FOLDER/$GPU_VERSION-fails.txt \
     --skips $EXPECTATIONS_FOLDER/all-skips.txt ${DEQP_SKIPS:-} \
     --flakes $EXPECTATIONS_FOLDER/$GPU_VERSION-flakes.txt \
     --testlog-to-xml /deqp/executor/testlog-to-xml \
