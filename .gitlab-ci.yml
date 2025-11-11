@@ -194,8 +194,9 @@ jupiter-mesa:
     paths:
       - "./"
     exclude:
-      - storage   # Work around a b2c bug
-      - .valve-ci
+      - storage/**/*   # Work around a b2c bug
+      - .valve-ci/**/*
+      - .git/**/*
     expire_in: 1 week
   variables:
     GIT_STRATEGY: none
