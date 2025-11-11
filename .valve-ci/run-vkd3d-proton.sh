@@ -13,6 +13,9 @@ comma_separated() {
 VK_DRIVER=${VK_DRIVER:-radeon}
 DRIVER_NAME=${DRIVER_NAME:-radv}
 
+RESULTS_DIR="$PWD/${RESULTS_DIR:-results}"
+mkdir -p "$RESULTS_DIR"
+
 # Are we using the right vkd3d-proton version?
 # ci_tag_test_time_check "VKD3D_PROTON_TAG"
 
