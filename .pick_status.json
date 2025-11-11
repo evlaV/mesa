@@ -5684,7 +5684,7 @@
         "description": "radv: add a workaround for color<->stencil only copies on SDMA4-5",
         "nominated": true,
         "nomination_type": 2,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "0034f5a9487b66467ff415a2ba3490b32443062f",
         "notes": null
