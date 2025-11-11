@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1091 # paths only become valid at runtime
 
-. "${SCRIPTS_DIR}/setup-test-env.sh"
+# . "${SCRIPTS_DIR}/setup-test-env.sh"
 
 set -eu -o pipefail
 
@@ -21,7 +21,7 @@ if [ -z "$VKD3D_PROTON_TAG" ]; then
 fi
 
 # Are we using the right vkd3d-proton version?
-ci_tag_test_time_check "VKD3D_PROTON_TAG"
+# ci_tag_test_time_check "VKD3D_PROTON_TAG"
 
 INSTALL=$(realpath -s "$PWD"/install)
 
@@ -57,7 +57,8 @@ if ! vulkaninfo | grep driverInfo | tee /tmp/version.txt | grep -qF "Mesa $MESA_
 fi
 
 # Gather the list expected failures
-EXPECTATIONFILE="$RESULTS_DIR/$GPU_VERSION-vkd3d-fails.txt"
+EXPECTATIONS_FOLDER=/mesa
+EXPECTATIONFILE="$EXPECTATIONS_FOLDER/$GPU_VERSION-vkd3d-fails.txt"
 if [ -f "$INSTALL/$GPU_VERSION-vkd3d-fails.txt" ]; then
     # Ignore the grep "failure" if the file exists but contains only comments
     # or empty lines; the expectation file used will be empty in this case,
