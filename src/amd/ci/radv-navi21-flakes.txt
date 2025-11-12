@@ -16,3 +16,6 @@ dEQP-VK.synchronization.op.multi_queue.fence.write_copy_image_read_image_compute
 dEQP-VK.synchronization2.op.multi_queue.fence.write_copy_buffer_read_copy_buffer_to_image.buffer_262144_exclusive
 dEQP-VK.synchronization2.op.multi_queue.fence.write_copy_buffer_read_ssbo_compute_indirect.buffer_262144_concurrent
 dEQP-VK.texture.shadow.cube_array.linear_mipmap_nearest.non_seamless_less_or_equal_d32_sfloat_s8_uint
+
+dEQP-VK.ray_tracing_pipeline.pipeline_library.configurations.*
+dEQP-VK.ray_tracing_pipeline.pipeline_no_null_shaders_flag.*
