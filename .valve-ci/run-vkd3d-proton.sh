@@ -29,8 +29,7 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}:$INSTALL/lib/:/vkd3d-proton-tests/l
 
 
 # Set the Vulkan driver to use.
-ARCH=$(uname -m)
-export VK_DRIVER_FILES="$INSTALL/share/vulkan/icd.d/${VK_DRIVER}_icd.$ARCH.json"
+export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/"$VK_DRIVER"_icd.${VK_CPU:-$(uname -m)}.json
 
 # Set environment for Wine.
 export WINEDEBUG="-all"
@@ -99,7 +98,7 @@ printf "%s\n" "Running vkd3d-proton testsuite..."
 LOGFILE="$RESULTS_DIR/vkd3d-proton-log.txt"
 TEST_LOGS="/test-logs"
 pushd /vkd3d-proton-tests
-tests/test-runner.sh ./d3d12 --jobs "${FDO_CI_CONCURRENT:-4}" --output-dir "$TEST_LOGS" | tee "$LOGFILE" || true
+tests/test-runner.sh ./bin/d3d12 --jobs "${FDO_CI_CONCURRENT:-4}" --output-dir "$TEST_LOGS" | tee "$LOGFILE" || true
 popd
 
 printf '\n\n'
