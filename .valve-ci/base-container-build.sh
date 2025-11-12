@@ -15,6 +15,8 @@ git submodule update --init --recursive
 meson setup build -Denable_tests=true --buildtype release --prefix /vkd3d-proton-tests --strip
 ninja -C build install
 install -D -m755 -t /vkd3d-proton-tests/bin build/tests/d3d12
+install -D -m755 -t /vkd3d-proton-tests/tests build/tests/test-runner.sh
+install -D -m755 -t /vkd3d-proton-tests/tests build/tests/d3d12_tests.h
 popd
 
 rm -rf /vkd3d-proton-src
