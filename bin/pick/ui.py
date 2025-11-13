@@ -203,6 +203,7 @@ class UI:
         self.load()
         with open('VERSION', 'r') as f:
             version = '.'.join(f.read().split('.')[:2])
+        version = 'steamos-25.11'
         if self.previous_commits:
             sha = self.previous_commits[0].sha
         else:

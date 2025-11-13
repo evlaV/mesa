@@ -295,7 +295,7 @@ async def resolve_nomination(commit: 'Commit', version: str) -> 'Commit':
 
     if backport_to := IS_BACKPORT.findall(commit_message):
         for match in backport_to:
-            if any(Version(version) >= Version(backport_version)
+            if any(Version('26.0') >= Version(backport_version)
                    for backport_version in match if backport_version != ''):
                 commit.nominated = True
                 commit.nomination_type = NominationType.BACKPORT
