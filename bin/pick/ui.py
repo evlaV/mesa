@@ -201,12 +201,12 @@ class UI:
 
     async def update(self) -> None:
         self.load()
-        with open('VERSION', 'r') as f:
-            version = '.'.join(f.read().split('.')[:2])
+        branch = 'steamos-26.05'
+        semver_version = '26.1'
         if self.previous_commits:
             sha = self.previous_commits[0].sha
         else:
-            sha = f'{version}-branchpoint'
+            sha = f'{branch}-branchpoint'
 
         new_commits = await core.get_new_commits(sha)
 
@@ -216,7 +216,7 @@ class UI:
             self.mainloop.widget = urwid.Overlay(
                 urwid.Filler(urwid.LineBox(pb)), o, 'center', ('relative', 50), 'middle', ('relative', 50))
             self.new_commits = await core.gather_commits(
-                version, self.previous_commits, new_commits,
+                semver_version, self.previous_commits, new_commits,
                 lambda: pb.set_completion(pb.current + 1))
             self.mainloop.widget = o
 
