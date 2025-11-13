@@ -278,6 +278,9 @@ jupiter-vkd3d-proton-vangogh:
   extends:
     - .test-vkd3d-proton
     - .vangogh-test-valve
+  variables:
+    # Disable concurrency
+    CI_JOB_CONCURRENCY: 1
 
 
 # Navi21
