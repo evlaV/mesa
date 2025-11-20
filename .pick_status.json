@@ -2754,7 +2754,7 @@
         "description": "radv: Limit GTK workaround to affected versions",
         "nominated": true,
         "nomination_type": 2,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "0d9d45db4e1b6d00747bf635ba3222146a899468",
         "notes": null
