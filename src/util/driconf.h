@@ -816,6 +816,10 @@
 #define DRI_CONF_RADV_DISABLE_NGG_CULLING(def) \
    DRI_CONF_OPT_B(radv_disable_ngg_culling, def, "Disable NGG culling on GFX10.3.")
 
+#define DRI_CONF_RADV_HIDE_REBAR_ON_DGPU(def) \
+   DRI_CONF_OPT_B(radv_hide_rebar_on_dgpu, def, \
+                  "Hide resizable bar on dGPUs by exposing a fake carveout of 256MiB.")
+
 /**
  * \brief ANV specific configuration options
  */
