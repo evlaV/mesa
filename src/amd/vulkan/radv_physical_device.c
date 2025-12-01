@@ -2316,10 +2316,7 @@ radv_physical_device_try_create(struct radv_instance *instance, drmDevicePtr drm
       goto fail_base;
 #else
    if (drm_device) {
-      bool reserve_vmid = instance->vk.trace_mode & RADV_TRACE_MODE_RGP;
-
-      result = radv_amdgpu_winsys_create(fd, instance->debug_flags, instance->perftest_flags, reserve_vmid, is_virtio,
-                                         &pdev->ws);
+      result = radv_amdgpu_winsys_create(fd, instance->debug_flags, instance->perftest_flags, is_virtio, &pdev->ws);
 
       if (result != VK_SUCCESS) {
          result = vk_errorf(instance, result, "failed to initialize winsys");
