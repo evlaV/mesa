@@ -9844,6 +9844,9 @@ radv_CmdExecuteCommands(VkCommandBuffer commandBuffer, uint32_t commandBufferCou
    primary->state.last_first_instance = -1;
    primary->state.last_drawid = -1;
    primary->state.last_vertex_offset_valid = false;
+
+   /* Make sure to re-emit the PS epilog if the same graphics pipeline is bind again. */
+   primary->state.ps_epilog = NULL;
 }
 
 static void
