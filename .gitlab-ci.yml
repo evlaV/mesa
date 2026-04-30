@@ -55,11 +55,10 @@ workflow:
         # CI_TRON_UCODE_URL: 'https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-3.6/os/x86_64/amd-ucode-jupiter.20231113.1-1-any.pkg.tar.zst'
 
     # Beta
-    # TODO: Create a new container when 3.8 gets branched
     - if: '$CI_COMMIT_BRANCH == "steamos-25.11"'
       when: on_success
       variables:
-        JUPITER_VERSION: "main"
+        JUPITER_VERSION: "3.8"
         BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
@@ -158,6 +157,16 @@ jupiter-3.7-base:
     DEQP_COMMITS_TO_BACKPORT:
     VKD3D_PROTON_COMMIT: 59d6d4b5ed23766e69fe252408a3401d2fd52ce8
     IMAGE_TAG: "2025-05-27.1"
+
+jupiter-3.8-base:
+  extends:
+    - .base-container-build
+  variables:
+    BASE_IMAGE: registry.gitlab.steamos.cloud/steam/steamos-docker-images/jupiter-3.8/base-devel:latest
+    DEQP_BRANCH: db48c34bebaf3359453e44ab151a2ff9f9c58eb2
+    DEQP_COMMITS_TO_BACKPORT:
+    VKD3D_PROTON_COMMIT: 4acd2271319df0ca06b7c0429d371cc8a0504037
+    IMAGE_TAG: "2026-04-30.1"
 
 jupiter-main-base:
   extends:
