@@ -69,6 +69,22 @@ workflow:
         CI_TRON_INITRAMFS__GPU__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.gpu_amdgpu.cpio
         CI_TRON_KERNEL_CMDLINE__LOAD_MODULES: 'modules_load=amdgpu'
 
+    # 3.9
+    # TODO: Create a new container when 3.9 gets branched
+    - if: '$CI_COMMIT_BRANCH == "steamos-26.05"'
+      when: on_success
+      variables:
+        JUPITER_VERSION: "main"
+        BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
+        BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
+        COMPILE_LIBDRM_WITH_MESA: "0"
+        RADV_PERFTEST: "transfer_queue,hic"
+        RADV_DEBUG: "novideo"
+        CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64
+        CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.depmod.cpio.xz
+        CI_TRON_INITRAMFS__GPU__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.gpu_amdgpu.cpio
+        CI_TRON_KERNEL_CMDLINE__LOAD_MODULES: 'modules_load=amdgpu'
+
     # Default to main
     - when: on_success
       variables:
