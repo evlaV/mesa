@@ -4,7 +4,7 @@
         "description": "amd/virtio: fix amdgpu_sw_info_address_prt_wa_control_bit handling",
         "nominated": true,
         "nomination_type": 2,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "60b406e23316cfababe5ef9e33b5c32aa9d0260a",
         "notes": null
