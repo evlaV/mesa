@@ -14,7 +14,7 @@
         "description": "amd/virtio: use AMDGPU_VA_MGR_RESERVE_HALF_VA_FOR_PRT",
         "nominated": true,
         "nomination_type": 2,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "e0b5724e85db55f20a1a0dd4eb6d58b6ec1cf49d",
         "notes": null
