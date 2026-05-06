@@ -78,7 +78,7 @@ workflow:
         BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
-        RADV_PERFTEST: "transfer_queue,hic"
+        RADV_EXPERIMENTAL: "transfer_queue,hic"
         RADV_DEBUG: "novideo"
         CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64
         CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.depmod.cpio.xz
@@ -92,7 +92,7 @@ workflow:
         BASE_IMAGE_TAG: !reference [jupiter-main-base, variables, IMAGE_TAG]
         BASE_IMAGE: $CI_REGISTRY_IMAGE/jupiter-main-base:$BASE_IMAGE_TAG
         COMPILE_LIBDRM_WITH_MESA: "0"
-        RADV_PERFTEST: "transfer_queue,hic"
+        RADV_EXPERIMENTAL: "transfer_queue,hic"
         RADV_DEBUG: "novideo"
         CI_TRON_KERNEL__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64
         CI_TRON_INITRAMFS__DEPMOD__URL: https://fs.mupuf.org/radv/linux-6.17.3_w_buddy_fixes/linux-x86_64.depmod.cpio.xz
