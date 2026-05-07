@@ -67,6 +67,7 @@ for prefix in $({
 done
 
 if [[ $CI_JOB_NAME != *full* ]]; then
+  touch $EXPECTATIONS_FOLDER/all-slow-skips.txt
   FILE_ARGS="$FILE_ARGS --skips $EXPECTATIONS_FOLDER/all-slow-skips.txt"
   add_if_exists "--skips" "$GPU_VERSION-slow-skips.txt"
 fi
