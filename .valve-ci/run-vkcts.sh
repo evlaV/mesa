@@ -44,7 +44,7 @@ cat_if_exists() {
   prefix=$1
   kind=$2
   if [ -e "$EXPECTATIONS_FOLDER/$prefix-$kind.txt" ]; then
-    cat "$EXPECTATIONS_FOLDER/$prefix-$kind.txt" >> "/$kind.txt"
+    cat "$EXPECTATIONS_FOLDER/$prefix-$kind.txt" >> "$EXPECTATIONS_FOLDER/$kind.txt"
   fi
 }
 
