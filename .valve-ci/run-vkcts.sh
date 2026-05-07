@@ -34,22 +34,41 @@ EXPECTATIONS_FOLDER=/mesa
 
 DEQP_RUNNER_OPTIONS="--tests-per-group 5000"
 
-# Default to an empty known flakes file if it doesn't exist.
-touch $EXPECTATIONS_FOLDER/$GPU_VERSION-fails.txt
+FILE_ARGS=""
 
-if [ -e "$EXPECTATIONS_FOLDER/${DRIVER_NAME}-fails.txt" ]; then
-    cat "$EXPECTATIONS_FOLDER/${DRIVER_NAME}-fails.txt" >> "$EXPECTATIONS_FOLDER/$GPU_VERSION-fails.txt"
-fi
+touch $EXPECTATIONS_FOLDER/fails.txt
 
-# Default to an empty known flakes file if it doesn't exist.
-touch $EXPECTATIONS_FOLDER/$GPU_VERSION-flakes.txt
+# There must be a single baseline expected fails list, this lets us cat together
+# xfails from multiple possible sources. Do we actually use this, though?
+cat_if_exists() {
+  prefix=$1
+  kind=$2
+  if [ -e "$EXPECTATIONS_FOLDER/$prefix-$kind.txt" ]; then
+    cat "$EXPECTATIONS_FOLDER/$prefix-$kind.txt" >> "/$kind.txt"
+  fi
+}
 
-if [ -n "$DRIVER_NAME" ] && [ -e "$EXPECTATIONS_FOLDER/$DRIVER_NAME-skips.txt" ]; then
-    DEQP_SKIPS="${DEQP_SKIPS:-} $EXPECTATIONS_FOLDER/$DRIVER_NAME-skips.txt"
-fi
+add_if_exists() {
+  if [ -e "$EXPECTATIONS_FOLDER/$2" ]; then
+    FILE_ARGS="$FILE_ARGS $1 $EXPECTATIONS_FOLDER/$2"
+  fi
+}
 
-if [ -e "$EXPECTATIONS_FOLDER/$GPU_VERSION-skips.txt" ]; then
-    DEQP_SKIPS="${DEQP_SKIPS:-} $EXPECTATIONS_FOLDER/$GPU_VERSION-skips.txt"
+# remove duplicate values to avoid reading the same file multiple times
+for prefix in $({
+  echo "all"
+  echo "$DRIVER_NAME"
+  echo "$GPU_VERSION"
+} | sort -u); do
+  cat_if_exists "$prefix" fails
+  add_if_exists "--flakes" "$prefix-flakes.txt"
+  add_if_exists "--skips" "$prefix-skips.txt"
+  add_if_exists "--single-thread" "$prefix-single-thread.txt"
+done
+
+if [[ $CI_JOB_NAME != *full* ]]; then
+  FILE_ARGS="$FILE_ARGS --skips $EXPECTATIONS_FOLDER/all-slow-skips.txt"
+  add_if_exists "--skips" "$GPU_VERSION-slow-skips.txt"
 fi
 
 report_load() {
@@ -63,9 +82,8 @@ deqp-runner \
     --deqp $DEQP \
     --output $RESULTS \
     --caselist $MUSTPASS \
-    --baseline $EXPECTATIONS_FOLDER/$GPU_VERSION-fails.txt \
-    --skips $EXPECTATIONS_FOLDER/all-skips.txt ${DEQP_SKIPS:-} \
-    --flakes $EXPECTATIONS_FOLDER/$GPU_VERSION-flakes.txt \
+    --baseline $EXPECTATIONS_FOLDER/fails.txt \
+    $FILE_ARGS \
     --testlog-to-xml /deqp/executor/testlog-to-xml \
     --jobs ${CI_JOB_CONCURRENCY:-4} \
     $DEQP_RUNNER_OPTIONS \
