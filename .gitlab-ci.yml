@@ -273,6 +273,7 @@ jupiter-mesa:
     - .jupiter-test
   variables:
     CI_TRON__B2C_EXEC_CMD: .valve-ci/run-vkcts.sh
+    DEQP_SUITE: radv
 
 .test-vkd3d-proton:
   extends:

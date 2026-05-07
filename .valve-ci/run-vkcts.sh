@@ -18,21 +18,13 @@ DEQP_HEIGHT=${DEQP_HEIGHT:-256}
 DEQP_CONFIG=${DEQP_CONFIG:-rgba8888d24s8ms0}
 DEQP_VARIANT=${DEQP_VARIANT:-master}
 
-DEQP_OPTIONS="${DEQP_OPTIONS:-} --deqp-surface-width=$DEQP_WIDTH --deqp-surface-height=$DEQP_HEIGHT"
-DEQP_OPTIONS="$DEQP_OPTIONS --deqp-surface-type=${DEQP_SURFACE_TYPE:-pbuffer}"
-DEQP_OPTIONS="$DEQP_OPTIONS --deqp-gl-config-name=$DEQP_CONFIG"
-DEQP_OPTIONS="$DEQP_OPTIONS --deqp-visibility=hidden"
-
 if [ "$DEQP_VER" = "vk" ] && [ -z "$VK_DRIVER" ]; then
     echo 'VK_DRIVER must be to something like "radeon" or "intel" for the test run'
     exit 1
 fi
 
-MUSTPASS=/deqp/mustpass/vk-$DEQP_VARIANT.txt
 DEQP=/deqp/external/vulkancts/modules/vulkan/deqp-vk
 EXPECTATIONS_FOLDER=/mesa
-
-DEQP_RUNNER_OPTIONS="--tests-per-group 5000"
 
 FILE_ARGS=""
 
@@ -79,17 +71,16 @@ report_load() {
 
 set +e
 deqp-runner \
-    run \
-    --deqp $DEQP \
+    suite \
+    --suite $EXPECTATIONS_FOLDER/deqp-$DEQP_SUITE.toml \
     --output $RESULTS \
-    --caselist $MUSTPASS \
     --baseline $EXPECTATIONS_FOLDER/fails.txt \
     $FILE_ARGS \
     --testlog-to-xml /deqp/executor/testlog-to-xml \
+    --fraction-start ${CI_NODE_INDEX:-1} \
+    --fraction $((CI_NODE_TOTAL * ${DEQP_FRACTION:-1})) \
     --jobs ${CI_JOB_CONCURRENCY:-4} \
-    $DEQP_RUNNER_OPTIONS \
-    -- \
-    $DEQP_OPTIONS
+    ${DEQP_RUNNER_MAX_FAILS:+--max-fails "$DEQP_RUNNER_MAX_FAILS"} \
 
 DEQP_EXITCODE=$?
 
