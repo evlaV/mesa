@@ -45,24 +45,24 @@ done
 popd
 
 python3 /VK-GL-CTS/external/fetch_sources.py --insecure
-cmake -S /VK-GL-CTS -B /deqp -G Ninja \
+cmake -S /VK-GL-CTS -B /deqp-vk-main -G Ninja \
       -DDEQP_TARGET=surfaceless \
       -DCMAKE_BUILD_TYPE=Release
-ninja -C /deqp external/vulkancts/modules/vulkan/deqp-vk
+ninja -C /deqp-vk-main external/vulkancts/modules/vulkan/deqp-vk
 
 # Cleanup the build folder
-rm -rf /deqp/external/{glslang,spirv-tools,amber}
-rm -rf /deqp/external/vulkancts/framework
-rm -rf /deqp/external/vulkancts/modules/vulkan/vk-default
-rm -rf /deqp/framework
-find /deqp -iname '*cmake*' -o -name '*ninja*' -o -name '*.o' -o -name '*.a' | xargs rm -rf
-strip /deqp/external/vulkancts/modules/vulkan/deqp-vk
+rm -rf /deqp-vk-main/external/{glslang,spirv-tools,amber}
+rm -rf /deqp-vk-main/external/vulkancts/framework
+rm -rf /deqp-vk-main/external/vulkancts/modules/vulkan/vk-default
+rm -rf /deqp-vk-main/framework
+find /deqp-vk-main -iname '*cmake*' -o -name '*ninja*' -o -name '*.o' -o -name '*.a' | xargs rm -rf
+strip /deqp-vk-main/external/vulkancts/modules/vulkan/deqp-vk
 
 # Copy out the mustpass lists we want.
-mkdir -p /deqp/mustpass
+mkdir -p /deqp-vk-main/mustpass
 for mustpass in $(< /VK-GL-CTS/external/vulkancts/mustpass/main/vk-default.txt) ; do
     cat /VK-GL-CTS/external/vulkancts/mustpass/main/$mustpass \
-        >> /deqp/mustpass/vk-master.txt
+        >> /deqp-vk-main/mustpass/vk-main.txt
 done
 rm -rf /VK-GL-CTS
 

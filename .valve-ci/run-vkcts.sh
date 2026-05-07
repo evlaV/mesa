@@ -10,20 +10,17 @@ DEQP_VER=${DEQP_VER:-vk}
 # Set up the driver environment.
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/"$VK_DRIVER"_icd.${VK_CPU:-$(uname -m)}.json
 
+# linking the expected mesa ci install folder to our install location (/mesa)
+ln -s /mesa "$PWD/install"
+
 RESULTS="$PWD/${DEQP_RESULTS_DIR:-results}"
 mkdir -p "$RESULTS"
-
-DEQP_WIDTH=${DEQP_WIDTH:-256}
-DEQP_HEIGHT=${DEQP_HEIGHT:-256}
-DEQP_CONFIG=${DEQP_CONFIG:-rgba8888d24s8ms0}
-DEQP_VARIANT=${DEQP_VARIANT:-master}
 
 if [ "$DEQP_VER" = "vk" ] && [ -z "$VK_DRIVER" ]; then
     echo 'VK_DRIVER must be to something like "radeon" or "intel" for the test run'
     exit 1
 fi
 
-DEQP=/deqp/external/vulkancts/modules/vulkan/deqp-vk
 EXPECTATIONS_FOLDER=/mesa
 
 FILE_ARGS=""
@@ -76,7 +73,7 @@ deqp-runner \
     --output $RESULTS \
     --baseline $EXPECTATIONS_FOLDER/fails.txt \
     $FILE_ARGS \
-    --testlog-to-xml /deqp/executor/testlog-to-xml \
+    --testlog-to-xml /deqp-vk-main/executor/testlog-to-xml \
     --fraction-start ${CI_NODE_INDEX:-1} \
     --fraction $((CI_NODE_TOTAL * ${DEQP_FRACTION:-1})) \
     --jobs ${CI_JOB_CONCURRENCY:-4} \
@@ -97,7 +94,7 @@ find $RESULTS -name \*.xml | \
 
 # If any QPA XMLs are there, then include the XSL/CSS in our artifacts.
 find $RESULTS -name \*.xml \
-    -exec cp /deqp/testlog.css /deqp/testlog.xsl "$RESULTS/" ";" \
+    -exec cp /deqp-vk-main/testlog.css /deqp-vk-main/testlog.xsl "$RESULTS/" ";" \
     -quit
 
 # Compress results.csv to save on bandwidth during the upload of artifacts to
