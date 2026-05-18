@@ -444,7 +444,7 @@
         "description": "ac/nir/lower_tex_coord: update cursor when moving wqm coordinates",
         "nominated": true,
         "nomination_type": 2,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "0ff16506628216e06d876aab5cc498f71067b2af",
         "notes": null
