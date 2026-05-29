@@ -226,7 +226,7 @@ radv_amdgpu_winsys_filter_perftest_flags(uint64_t perftest_flags)
 }
 
 VkResult
-radv_amdgpu_winsys_create(int fd, uint64_t debug_flags, uint64_t perftest_flags, bool is_virtio,
+radv_amdgpu_winsys_create(int fd, uint64_t debug_flags, uint64_t perftest_flags, bool is_virtio, bool vm_explicit_sync,
                           struct radeon_winsys **winsys)
 {
    VkResult result = VK_SUCCESS;
@@ -330,6 +330,8 @@ radv_amdgpu_winsys_create(int fd, uint64_t debug_flags, uint64_t perftest_flags,
       if (!ws->bo_history_logfile)
          fprintf(stderr, "radv/amdgpu: Failed to create /tmp/radv_bo_history.log.\n");
    }
+
+   ws->vm_explicit_sync = vm_explicit_sync;
 
    int num_sync_types = 0;
 

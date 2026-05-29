@@ -45,7 +45,7 @@ radv_amdgpu_bo_va_op(struct radv_amdgpu_winsys *ws, uint32_t bo_handle, uint64_t
    if (!wait_syncobj)
       return -ENOMEM;
 
-   if (ws->info.has_explicit_sync_vm_ops) {
+   if (ws->info.has_explicit_sync_vm_ops && ws->vm_explicit_sync) {
       for (uint32_t i = 0; i < wait_count; ++i) {
          if (waits[i].sync->type == &vk_sync_dummy_type)
             continue;
@@ -95,7 +95,7 @@ radv_amdgpu_bo_va_op(struct radv_amdgpu_winsys *ws, uint32_t bo_handle, uint64_t
       r = ac_drm_cs_syncobj_timeline_wait(ws->dev, &ws->vm_timeline_syncobj, &vm_timeline_point, 1, INT64_MAX,
                                           DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL | DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT,
                                           NULL);
-   } else if (ws->info.has_explicit_sync_vm_ops) {
+   } else if (ws->info.has_explicit_sync_vm_ops && ws->vm_explicit_sync) {
       flags |= AMDGPU_VM_EXPLICIT_SYNC;
       r = ac_drm_bo_va_op_raw2(ws->dev, bo_handle, offset, size, addr, flags, ops, 0, 0, (uint64_t)wait_syncobj,
                                wait_idx);

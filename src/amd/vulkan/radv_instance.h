@@ -80,6 +80,7 @@ struct radv_drirc {
       bool expose_float16_gfx8;
       bool vk_require_astc;
       bool vk_require_etc2;
+      bool vm_explicit_sync;
    } features;
 
    struct {

@@ -864,6 +864,7 @@ radv_update_preamble_cs(struct radv_queue_state *queue_state, struct radv_queue 
 {
    struct radv_device *device = radv_queue_device(queue);
    const struct radv_physical_device *pdev = radv_device_physical(device);
+   const struct radv_instance *instance = radv_physical_device_instance(pdev);
    struct radeon_winsys *ws = device->ws;
    struct radeon_winsys_bo *scratch_bo = queue_state->scratch_bo;
    struct radeon_winsys_bo *descriptor_bo = queue_state->descriptor_bo;
@@ -1123,7 +1124,7 @@ radv_update_preamble_cs(struct radv_queue_state *queue_state, struct radv_queue 
        compute_scratch_bo != queue_state->compute_scratch_bo || esgs_ring_bo != queue_state->esgs_ring_bo ||
        gsvs_ring_bo != queue_state->gsvs_ring_bo || descriptor_bo != queue_state->descriptor_bo) {
 
-      if (radv_device_physical(device)->info.has_explicit_sync_vm_ops) {
+      if (radv_device_physical(device)->info.has_explicit_sync_vm_ops && instance->drirc.features.vm_explicit_sync) {
          bool success =
             device->ws->ctx_wait_idle(queue->hw_ctx, radv_queue_ring(queue), queue->vk.index_in_family);
          if (!success) {

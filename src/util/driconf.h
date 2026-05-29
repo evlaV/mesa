@@ -850,6 +850,10 @@
    DRI_CONF_OPT_B(radv_force_64_byte_sampled_image, def, \
                   "Force sampled images size to 64 bytes.")
 
+#define DRI_CONF_RADV_VM_EXPLICIT_SYNC(def) \
+   DRI_CONF_OPT_B(radv_vm_explicit_sync, def, \
+                  "Use explicit synchronization for VM ops if the kernel supports it.")
+
 /**
  * \brief ANV specific configuration options
  */

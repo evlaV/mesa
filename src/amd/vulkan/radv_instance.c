@@ -234,6 +234,7 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_RADV_NO_IMPLICIT_VARYING_SUBGROUP_SIZE(false)
       DRI_CONF_RADV_HIDE_REBAR_ON_DGPU(false)
       DRI_CONF_RADV_FORCE_64_BYTE_SAMPLED_IMAGE(false)
+      DRI_CONF_RADV_VM_EXPLICIT_SYNC(false)
    DRI_CONF_SECTION_END
 };
 // clang-format on
@@ -307,6 +308,7 @@ radv_init_dri_features_options(struct radv_instance *instance)
    drirc->features.expose_float16_gfx8 = driQueryOptionb(&drirc->options, "radv_enable_float16_gfx8");
    drirc->features.vk_require_etc2 = driQueryOptionb(&drirc->options, "vk_require_etc2");
    drirc->features.vk_require_astc = driQueryOptionb(&drirc->options, "vk_require_astc");
+   drirc->features.vm_explicit_sync = driQueryOptionb(&drirc->options, "radv_vm_explicit_sync");
 }
 
 static void

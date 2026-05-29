@@ -13,6 +13,6 @@
 #define RADV_AMDGPU_WINSYS_PUBLIC_H
 
 VkResult radv_amdgpu_winsys_create(int fd, uint64_t debug_flags, uint64_t perftest_flags, bool is_virtio,
-                                   struct radeon_winsys **winsys);
+                                   bool vm_explicit_sync, struct radeon_winsys **winsys);
 
 #endif /* RADV_AMDGPU_WINSYS_PUBLIC_H */
