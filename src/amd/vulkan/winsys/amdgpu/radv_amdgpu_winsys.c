@@ -164,6 +164,8 @@ radv_amdgpu_winsys_destroy(struct radeon_winsys *rws)
    if (!destroy)
       return;
 
+   radv_amdgpu_null_prt_bug_finish(rws);
+
    u_rwlock_destroy(&ws->global_bo_list.lock);
    free(ws->global_bo_list.bos);
 
@@ -174,8 +176,6 @@ radv_amdgpu_winsys_destroy(struct radeon_winsys *rws)
       fclose(ws->bo_history_logfile);
 
    u_rwlock_destroy(&ws->log_bo_list_lock);
-
-   radv_amdgpu_null_prt_bug_finish(rws);
 
    ac_drm_device_deinitialize(ws->dev);
    FREE(rws);

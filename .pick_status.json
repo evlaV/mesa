@@ -54,7 +54,7 @@
         "description": "radv/amdgpu: destroy the BO for the NULL PRT workaround earlier",
         "nominated": true,
         "nomination_type": 2,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "41fa96538656d19f129ae50fb974d184f8a93d25",
         "notes": null
