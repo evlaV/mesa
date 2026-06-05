@@ -1,5 +1,535 @@
 [
     {
+        "sha": "6a16319133d3d172f1c8fe5e213394ef831805e0",
+        "description": "radv/rt: Cache stack sizes of ahit/isec shaders from imported NIR",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "0ec4cc9cd5a09831b2447a342b44fcd05ae362f2",
+        "description": "vulkan: Update spec to 1.4.353",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "9f7f5a27a7edc49487af3cd10633896934a47295",
+        "description": "mesa/main: Auto-generate MESA_VERBOSE=api trace dispatch",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "d128c6f111438a47c818879c4bdba4cb092bbdaf",
+        "description": "mesa/main: Add trace dispatch plumbing for MESA_VERBOSE=api",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "1bd114d9c77841fdddbe69378a3c707a461b1d1d",
+        "description": "pan/ci: mark missing xfails",
+        "nominated": false,
+        "nomination_type": 2,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": "6425c6507e53e2de502d0cfba8834314065d2120",
+        "notes": null
+    },
+    {
+        "sha": "24af1196c0c200bab35ed06cbf35260b1b3619e6",
+        "description": "radv/amdgpu: destroy the BO for the NULL PRT workaround earlier",
+        "nominated": true,
+        "nomination_type": 2,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": "41fa96538656d19f129ae50fb974d184f8a93d25",
+        "notes": null
+    },
+    {
+        "sha": "e622cbee6427f30e1bd33437124c4653398c106b",
+        "description": "radv: fix a memory leak with perfcounters",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "c9acff31fb04a49e5c982748b3181392f0b137a5",
+        "description": "radv/rt: fix a memory leak with ahit/isec group",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "68273972d89697a41bbff7ba481520f4c498c4eb",
+        "description": "radv/rt: fix a memory leak with the RT prolog NIR",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "e247bdae0f912d3bc93c7768e03da78fe3ee550f",
+        "description": "radv/rt: fix a memory leak with hash tables",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "b6661df5f055ae66898e5a4facb5d4e1b501a1ec",
+        "description": "vulkan: Enable GOOGLE_display_timing on KHR_display across multiple drivers.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "b1c48c8f0ee5852b865b5caa05521f84c9bd4da2",
+        "description": "wsi/common: Add VK_GOOGLE_display_timing support for KHR_display.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "7215c4ef5fba349dbd5debb6c8fd336f1e3fef48",
+        "description": "wsi/wayland: Unconditionally assign present_timing.time_domain.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "3d43a0a05c24be130cd2246b5e844d3b53892b82",
+        "description": "wsi/common: Allow to return queue_done_time in host time domain.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "2beb0c8820587b272b72ecac0ba3733bc5b392df",
+        "description": "wsi/common: Allow VK_EXT_present_timing present without presentStageQueries.",
+        "nominated": true,
+        "nomination_type": 2,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": "47d69664d8f3393ecb895fa9a678f88c78b3505a",
+        "notes": null
+    },
+    {
+        "sha": "784a41cb8b855c3540d4479ac046dcc48a317652",
+        "description": "wsi/common: Small compliance fixes for VK_EXT_present_timing.",
+        "nominated": true,
+        "nomination_type": 2,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": "47d69664d8f3393ecb895fa9a678f88c78b3505a",
+        "notes": null
+    },
+    {
+        "sha": "d7b23e9f3a95164429e4dbdb8e3b9d04572ce18f",
+        "description": "wsi/display: Deal with vblank-less systems for VK_EXT_present_timing.",
+        "nominated": true,
+        "nomination_type": 2,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": "5e2814c8a4758b3c3910e21d245869e6f6939eee",
+        "notes": null
+    },
+    {
+        "sha": "b4a1756fd1f37b28858ba4c871188c1bf2b6f4f3",
+        "description": "wsi/display: Add workaround for all-zero valued pageflip events.",
+        "nominated": true,
+        "nomination_type": 2,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": "5e2814c8a4758b3c3910e21d245869e6f6939eee",
+        "notes": null
+    },
+    {
+        "sha": "f7fb4dd5ff5264737293231b758025b4291f1695",
+        "description": "wsi/display: Improve connector->last_nsec timestamping.",
+        "nominated": true,
+        "nomination_type": 2,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": "5e2814c8a4758b3c3910e21d245869e6f6939eee",
+        "notes": null
+    },
+    {
+        "sha": "d22e0844effc22837beb9da158050b5baf7053f2",
+        "description": "wsi/display: Expose VK_FORMAT_B8G8R8A8_UNORM before VK_FORMAT_B8G8R8A8_SRGB",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "fbdc5814ad98d37616dd7bf6d28ecc279007dd71",
+        "description": "tu/kgsl: initialize dump bo state in kgsl_bo_init sooner",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "bed8008c9d8c67d2914edb65fe308cc3435896df",
+        "description": "ac/parse_ib: initialize data variables to 0",
+        "nominated": false,
+        "nomination_type": 2,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": "2aec2e8dba36168b1d3c84643a676777100e01ee",
+        "notes": null
+    },
+    {
+        "sha": "c68e4d229bc6d3812939f13a5e46f841c1e17b06",
+        "description": "radeonsi: use aux context locks in si_destroy_screen",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "9487c1b0e93a4b039ee18d0c7723515071ae15d5",
+        "description": "radeonsi: consolidate aux context creation into si_get_aux_context",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "3b3181a14d24c78fe7ebf18deabe6ed752dfc98a",
+        "description": "radeonsi: fix sdma copy for gfx10",
+        "nominated": true,
+        "nomination_type": 2,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": "f5ecc5ffd5d2234bab9db62fdcdcf932af4c97d4",
+        "notes": null
+    },
+    {
+        "sha": "7e040483ec8129afa80777bc97072b90ab6ad712",
+        "description": "radeonsi: fix conformance window emission in the SPS",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "e984014d56f55b5d9f8b641e10ad3cc43e1b4e0c",
+        "description": "turnip: declare common VK drirc options using the helper",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "64e63051dcbc0084dadbd8c58b230828382a4dbe",
+        "description": "anv: declare common VK drirc options using the helper",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "4e436fbd3d8bda0df0de479324c3bcd896da1d8f",
+        "description": "radv: declare common VK drirc options using the helper",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "38ce035860232ad410b7c373109f29d4f1a43143",
+        "description": "util/drirc_gen: add a function to declare commmon VK options",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "923765617124cccd062c6c55156c1c73c2f7de98",
+        "description": "util: remove declared but unused DRIC_CONF_VK_REQUIRE_ASTC",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "e84e9dc582797b5e586ea4ff3ae7b5f3656968ee",
+        "description": "gallivm: Fix armhf build against LLVM 22",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "a6172f19a0915fc690104a02e894b263d982e247",
+        "description": "vtn/opencl: fix edge case behavior for tanpi",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "1e9b1075b6ddd977508bd5b69465a8c0a73ec6eb",
+        "description": "vtn/opencl: fix edge case behavior for sinpi",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "8c109381ed82eb87a89d0d70225676736271b9c1",
+        "description": "vtn/opencl: fix edge case behavior for cospi",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "3531a05fdd90498f84f805317422f7cb84841544",
+        "description": "vtn/opencl: convert libclc workaround handling to a switch statement",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "3a815a596935c2ec9ba218829861d948ce2a17d1",
+        "description": "nir: preserve infinities and signed zero during atan2",
+        "nominated": true,
+        "nomination_type": 1,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "c634bf11ce0124a87405ff196fc953799a365e0b",
+        "description": "drm-shim/freedreno: Report VM_BIND support.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "053c8025a23495cd62792b6bfd69f2d7cbf24e80",
+        "description": "drm-shim/freedreno: report a 48-bit address space.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "2b89d3da7055c1c6256842cb84e1d56e47bad5d8",
+        "description": "drm-shim/freedreno: Provide a dummy set of UBWC config params.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "37ae0e4255cc00895db612666a973b3fcc1d415c",
+        "description": "drm-shim: Include the hex of the driver ioctl for unimplemented ioctls.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "1375ba209d9ec225f65a0f0ccd9e824304c39b4f",
+        "description": "ac: add basic HTILE dword printing",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "9f3af96552778e6acf3a4638cccdfc827601d21c",
+        "description": "ac/surface: print the modifier in ac_surface_print_info",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "a989ca8c8f353484ccd79c4fb1c26b6f9aec66ea",
+        "description": "mesa/st: run the lower_opcodes pass for draw shaders",
+        "nominated": true,
+        "nomination_type": 2,
+        "resolution": 0,
+        "main_sha": null,
+        "because_sha": "5eb0136a3c561e25d3f274e33a86812cfb2af589",
+        "notes": null
+    },
+    {
+        "sha": "a4a862a6052391eabc78122bbd59b3934e1fa889",
+        "description": "draw: Add lower_opcodes NIR pass",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "364b5f806ccc7f27e97caef6a5abf995fb6c2b7f",
+        "description": "compiler/rust/smallvec: Optimize extend()",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "4e8595da21b6f312c67662550ee269a80061de5f",
+        "description": "venus: let resource_create_blob wait for mem alloc",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "77b73d8595deaf3b33084b67c7eea5bc22ee52b5",
+        "description": "venus: update create_from_device_memory to take a cmd payload",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "2b37a0b410689f878c99309646e167a07c3b6821",
+        "description": "vulkan: use consistent module hashing for pipeline stages",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "0a60a53c8132e913761a8de7e41503fb602574e7",
+        "description": "vulkan: add vk_shader_module_hash helper",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "bea1212ee710d36bddb08b720734cc2eefc871b1",
+        "description": "anv/video: Change size of the cached array of recently decoded AV1 frames.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "11c8930e2beb839b438cf80c5228f2bd9a964d70",
+        "description": "anv/video: define ANV_VIDEO_AV1_MAX_DPB_SLOTS",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
+        "sha": "687528615998127e57e9e19a694e87178e446bb2",
+        "description": "anv/video: Add to check size mismatch during motion field estimation.",
+        "nominated": false,
+        "nomination_type": 0,
+        "resolution": 4,
+        "main_sha": null,
+        "because_sha": null,
+        "notes": null
+    },
+    {
         "sha": "1a8953c9562d779f2d2730900a85ab5f446fff12",
         "description": "radv: Dump printf buffer after detecting a GPU hang",
         "nominated": false,
