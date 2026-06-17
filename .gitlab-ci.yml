@@ -134,7 +134,7 @@ workflow:
         # added in the source tree, allowing access to the CI files without requiring
         # adding commits on top of the branch being tested
         dnf install -y git
-        git fetch origin ci && git restore --source origin/ci .valve-ci
+        git fetch origin ci && git restore --source FETCH_HEAD .valve-ci
 
         buildah run --isolation chroot --env DEQP_BRANCH=${DEQP_BRANCH:-} --env VKD3D_PROTON_COMMIT=${VKD3D_PROTON_COMMIT:-} --env DEQP_COMMITS_TO_BACKPORT="${DEQP_COMMITS_TO_BACKPORT:-}" --env COMPILE_LIBDRM_WITH_MESA=${COMPILE_LIBDRM_WITH_MESA:-0} --volume $PWD:/app/ --workingdir /app $buildcntr bash $BUILD_SCRIPT
 
