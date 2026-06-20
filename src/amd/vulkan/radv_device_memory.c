@@ -411,3 +411,12 @@ radv_GetDeviceMemoryCommitment(VkDevice device, VkDeviceMemory memory, VkDeviceS
 {
    *pCommittedMemoryInBytes = 0;
 }
+
+VKAPI_ATTR void VKAPI_CALL
+radv_SetDeviceMemoryPriorityEXT(VkDevice _device, VkDeviceMemory _memory, float priority)
+{
+   VK_FROM_HANDLE(radv_device, device, _device);
+   VK_FROM_HANDLE(radv_device_memory, memory, _memory);
+
+   device->ws->buffer_set_priority(device->ws, memory->bo, priority);
+}
