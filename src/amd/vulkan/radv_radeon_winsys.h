@@ -243,6 +243,8 @@ struct radeon_winsys {
    void (*buffer_destroy)(struct radeon_winsys *ws, struct radeon_winsys_bo *bo);
    void *(*buffer_map)(struct radeon_winsys *ws, struct radeon_winsys_bo *bo, bool use_fixed_addr, void *fixed_addr);
 
+   void (*buffer_set_priority)(struct radeon_winsys *ws, struct radeon_winsys_bo *bo, float priority);
+
    VkResult (*buffer_from_ptr)(struct radeon_winsys *ws, void *pointer, uint64_t size, unsigned priority,
                                struct radeon_winsys_bo **out_bo);
 

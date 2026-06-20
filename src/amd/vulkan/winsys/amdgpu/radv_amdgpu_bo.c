@@ -33,6 +33,32 @@
 
 static void radv_amdgpu_winsys_bo_destroy(struct radeon_winsys *_ws, struct radeon_winsys_bo *_bo);
 
+static uint32_t
+vk_prio_to_amdgpu(float vk)
+{
+   return (uint32_t)((double)vk * (double)(UINT32_MAX - 1u));
+}
+
+static void
+radv_amdgpu_winsys_bo_set_priority(struct radeon_winsys *_ws, struct radeon_winsys_bo *_bo, float prio)
+{
+   struct radv_amdgpu_winsys *ws = radv_amdgpu_winsys(_ws);
+   struct radv_amdgpu_winsys_bo *bo = radv_amdgpu_winsys_bo(_bo);
+   struct drm_amdgpu_gem_op args;
+
+   if (!bo->base.is_local) {
+      bo->priority = (int)(prio * 31.0f);
+      return;
+   }
+
+   memset(&args, 0, sizeof(args));
+   args.handle = bo->bo_handle;
+   args.op = AMDGPU_GEM_OP_SET_PRIORITY;
+   args.value = vk_prio_to_amdgpu(prio);
+
+   drmCommandWriteRead(ws->fd, DRM_AMDGPU_GEM_OP, &args, sizeof(args));
+}
+
 static int
 radv_amdgpu_bo_va_op(struct radv_amdgpu_winsys *ws, uint32_t bo_handle, uint64_t offset, uint64_t size, uint64_t addr,
                      uint32_t bo_flags, uint64_t internal_flags, uint32_t ops, uint32_t wait_count,
@@ -678,6 +704,9 @@ radv_amdgpu_winsys_bo_create(struct radeon_winsys *_ws, uint64_t size, unsigned 
       }
    }
 
+   if (bo->base.is_local)
+      radv_amdgpu_winsys_bo_set_priority(&ws->base, &bo->base, priority / 31.0f);
+
    if (initial_domain & RADEON_DOMAIN_GTT)
       p_atomic_add(&ws->allocated_gtt, align64(bo->base.size, ws->info.gart_page_size));
 
@@ -1284,6 +1313,7 @@ radv_amdgpu_bo_init_functions(struct radv_amdgpu_winsys *ws)
    ws->base.buffer_create = radv_amdgpu_winsys_bo_create;
    ws->base.buffer_destroy = radv_amdgpu_winsys_bo_destroy;
    ws->base.buffer_map = radv_amdgpu_winsys_bo_map;
+   ws->base.buffer_set_priority = radv_amdgpu_winsys_bo_set_priority;
    ws->base.buffer_unmap = radv_amdgpu_winsys_bo_unmap;
    ws->base.buffer_from_ptr = radv_amdgpu_winsys_bo_from_ptr;
    ws->base.buffer_from_fd = radv_amdgpu_winsys_bo_from_fd;
