@@ -854,6 +854,10 @@
    DRI_CONF_OPT_B(radv_vm_explicit_sync, def, \
                   "Use explicit synchronization for VM ops if the kernel supports it.")
 
+#define DRI_CONF_RADV_FORCE_NAN_PRESERVE_MIN_MAX(def) \
+   DRI_CONF_OPT_B(radv_force_nan_preserve_min_max, def, \
+                  "Treat FMax/FMin/FClamp like NMax/NMin/NClamp.")
+
 /**
  * \brief ANV specific configuration options
  */

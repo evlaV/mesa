@@ -544,7 +544,8 @@ struct radv_compiler_info {
       uint32_t tex_non_uniform : 1;
       uint32_t lower_terminate_to_discard : 1;
       uint32_t no_implicit_varying_subgroup_size : 1;
-      uint32_t padding : 31;
+      uint32_t force_nan_preserve_min_max : 1;
+      uint32_t padding : 30;
 
       int32_t force_aniso;
 

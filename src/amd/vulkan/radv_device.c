@@ -1188,6 +1188,7 @@ radv_device_init_compiler_info(struct radv_device *device)
             .tex_non_uniform = instance->drirc.debug.tex_non_uniform,
             .lower_terminate_to_discard = instance->drirc.debug.lower_terminate_to_discard,
             .no_implicit_varying_subgroup_size = instance->drirc.debug.no_implicit_varying_subgroup_size,
+            .force_nan_preserve_min_max = instance->drirc.debug.force_nan_preserve_min_max,
             .force_aniso = device->force_aniso,
             .family = pdev->info.family,
 
