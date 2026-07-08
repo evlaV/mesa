@@ -164,6 +164,7 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_RADV_DISABLE_NGG_GS(false)
       DRI_CONF_RADV_GFX12_HIZ_WA()
       DRI_CONF_RADV_DISABLE_NGG_CULLING(false)
+      DRI_CONF_RADV_DISABLE_GLOBAL_BO_LIST(false)
    DRI_CONF_SECTION_END
 
    DRI_CONF_SECTION_DEBUG
@@ -267,6 +268,7 @@ radv_init_dri_performance_options(struct radv_instance *instance)
    drirc->performance.report_llvm9_version_string =
       driQueryOptionb(&drirc->options, "radv_report_llvm9_version_string");
    drirc->performance.gfx12_hiz_wa = driQueryOptionstr(&drirc->options, "radv_gfx12_hiz_wa");
+   drirc->performance.disable_global_bo_list = driQueryOptionb(&drirc->options, "radv_disable_global_bo_list");
 }
 
 static void

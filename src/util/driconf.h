@@ -824,6 +824,10 @@
    DRI_CONF_OPT_B(radv_hide_rebar_on_dgpu, def, \
                   "Hide resizable bar on dGPUs by exposing a fake carveout of 256MiB.")
 
+#define DRI_CONF_RADV_DISABLE_GLOBAL_BO_LIST(def) \
+   DRI_CONF_OPT_B(radv_disable_global_bo_list, def, \
+                  "Disable the global BO list for apps that don't require it.")
+
 /**
  * \brief ANV specific configuration options
  */

@@ -1249,8 +1249,8 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
    /* TODO: Remove the per cmdbuf BO list tracking after few Mesa releases if no blockers. */
    device->use_global_bo_list = !pdev->info.is_virtio;
 
-   /* Disable it for debugging purposes if no features require it. */
-   if (instance->debug_flags & RADV_DEBUG_NO_BO_LIST) {
+   /* Disable it for debugging purposes or for performance issues if no features require it. */
+   if ((instance->debug_flags & RADV_DEBUG_NO_BO_LIST) || instance->drirc.performance.disable_global_bo_list) {
       if (!device->vk.enabled_features.bufferDeviceAddress && !device->vk.enabled_features.descriptorIndexing &&
           !device->vk.enabled_features.descriptorBindingUniformBufferUpdateAfterBind &&
           !device->vk.enabled_features.descriptorBindingSampledImageUpdateAfterBind &&
