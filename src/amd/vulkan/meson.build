@@ -23,6 +23,7 @@ radv_entrypoints_gen_command += [
   '--device-prefix', 'quantic_dream',
   '--device-prefix', 'no_mans_sky',
   '--device-prefix', 'strange_brigade',
+  '--device-prefix', 'ue5',
 
   # Command buffer annotation layer entrypoints
   '--device-prefix', 'annotate',
@@ -47,6 +48,7 @@ libradv_files = files(
   'layers/radv_rmv_layer.c',
   'layers/radv_rra_layer.c',
   'layers/radv_sqtt_layer.c',
+  'layers/radv_ue5.c',
   'meta/radv_meta.c',
   'meta/radv_meta.h',
   'meta/radv_meta_astc_decode.c',
