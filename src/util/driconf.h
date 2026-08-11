@@ -858,6 +858,10 @@
    DRI_CONF_OPT_B(radv_force_nan_preserve_min_max, def, \
                   "Treat FMax/FMin/FClamp like NMax/NMin/NClamp.")
 
+#define DRI_CONF_RADV_DISABLE_GLOBAL_BO_LIST(def) \
+   DRI_CONF_OPT_B(radv_disable_global_bo_list, def, \
+                  "Disable the global BO list for apps that don't require it.")
+
 /**
  * \brief ANV specific configuration options
  */

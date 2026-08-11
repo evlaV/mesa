@@ -236,6 +236,7 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_RADV_FORCE_64_BYTE_SAMPLED_IMAGE(false)
       DRI_CONF_RADV_VM_EXPLICIT_SYNC(false)
       DRI_CONF_RADV_FORCE_NAN_PRESERVE_MIN_MAX(false)
+      DRI_CONF_RADV_DISABLE_GLOBAL_BO_LIST(false)
    DRI_CONF_SECTION_END
 };
 // clang-format on
@@ -297,6 +298,7 @@ radv_init_dri_performance_options(struct radv_instance *instance)
    drirc->performance.gfx12_hiz_wa = driQueryOptionstr(&drirc->options, "radv_gfx12_hiz_wa");
    drirc->performance.prefer_2d_swizzle_for_3d_storage =
       driQueryOptionb(&drirc->options, "radv_prefer_2d_swizzle_for_3d_storage");
+   drirc->performance.disable_global_bo_list = driQueryOptionb(&drirc->options, "radv_disable_global_bo_list");
 }
 
 static void

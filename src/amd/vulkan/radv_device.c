@@ -1427,6 +1427,25 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
 
    device->use_global_bo_list = true;
 
+   /* Disable it only if no features require it. */
+   if (instance->drirc.performance.disable_global_bo_list) {
+      if (!device->vk.enabled_features.bufferDeviceAddress && !device->vk.enabled_features.descriptorIndexing &&
+          !device->vk.enabled_features.descriptorBindingUniformBufferUpdateAfterBind &&
+          !device->vk.enabled_features.descriptorBindingSampledImageUpdateAfterBind &&
+          !device->vk.enabled_features.descriptorBindingStorageImageUpdateAfterBind &&
+          !device->vk.enabled_features.descriptorBindingStorageBufferUpdateAfterBind &&
+          !device->vk.enabled_features.descriptorBindingUniformTexelBufferUpdateAfterBind &&
+          !device->vk.enabled_features.descriptorBindingStorageTexelBufferUpdateAfterBind &&
+          !device->vk.enabled_features.descriptorBindingUpdateUnusedWhilePending &&
+          !device->vk.enabled_features.descriptorBindingPartiallyBound &&
+          !device->vk.enabled_features.indirectMemoryCopy && !device->vk.enabled_features.indirectMemoryToImageCopy &&
+          !device->vk.enabled_features.deviceAddressCommands && !device->vk.enabled_features.descriptorHeap) {
+         device->use_global_bo_list = false;
+      } else {
+         fprintf(stderr, "radv: Can't disable the global BO list because some features require it!\n");
+      }
+   }
+
    device->overallocation_disallowed = overallocation_disallowed;
    mtx_init(&device->overallocation_mutex, mtx_plain);
 
