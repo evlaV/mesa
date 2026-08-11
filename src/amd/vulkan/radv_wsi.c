@@ -35,7 +35,8 @@ radv_wsi_set_memory_ownership(VkDevice _device, VkDeviceMemory _mem, VkBool32 ow
    VK_FROM_HANDLE(radv_device, device, _device);
    VK_FROM_HANDLE(radv_device_memory, mem, _mem);
 
-   device->ws->buffer_make_resident(device->ws, mem->bo, ownership);
+   if (device->use_global_bo_list)
+      device->ws->buffer_make_resident(device->ws, mem->bo, ownership);
 }
 
 static struct vk_queue *

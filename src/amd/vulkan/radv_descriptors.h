@@ -11,6 +11,7 @@
 
 #include "radv_buffer.h"
 #include "radv_buffer_view.h"
+#include "radv_cmd_buffer.h"
 #include "radv_constants.h"
 #include "radv_descriptor_set.h"
 #include "radv_device.h"
@@ -24,6 +25,8 @@
 
 #include <vulkan/vulkan.h>
 
+unsigned radv_descriptor_type_buffer_count(VkDescriptorType type);
+
 uint32_t radv_descriptor_alignment(VkDescriptorType type);
 
 bool radv_mutable_descriptor_type_size_alignment(const struct radv_device *device,
@@ -31,16 +34,29 @@ bool radv_mutable_descriptor_type_size_alignment(const struct radv_device *devic
                                                  uint64_t *out_align);
 
 static ALWAYS_INLINE void
-radv_write_texel_buffer_descriptor(unsigned *dst, const VkBufferView _buffer_view)
+radv_write_texel_buffer_descriptor(struct radv_device *device, struct radv_cmd_buffer *cmd_buffer, unsigned *dst,
+                                   struct radeon_winsys_bo **buffer_list, const VkBufferView _buffer_view)
 {
    VK_FROM_HANDLE(radv_buffer_view, buffer_view, _buffer_view);
 
    if (!buffer_view) {
       memset(dst, 0, RADV_BUFFER_DESC_SIZE);
+      if (!cmd_buffer)
+         *buffer_list = NULL;
       return;
    }
 
    memcpy(dst, buffer_view->state, RADV_BUFFER_DESC_SIZE);
+
+   if (device->use_global_bo_list)
+      return;
+
+   if (cmd_buffer) {
+      struct radv_cmd_stream *cs = cmd_buffer->cs;
+      radv_cs_add_buffer(device->ws, cs->b, buffer_view->bo);
+   } else {
+      *buffer_list = buffer_view->bo;
+   }
 }
 
 static ALWAYS_INLINE void
@@ -69,8 +85,9 @@ radv_write_buffer_descriptor(struct radv_device *device, VkDescriptorType descri
 }
 
 static ALWAYS_INLINE void
-radv_write_buffer_descriptor_impl(struct radv_device *device, VkDescriptorType descriptor_type, unsigned *dst,
-                                  const VkDescriptorBufferInfo *buffer_info)
+radv_write_buffer_descriptor_impl(struct radv_device *device, struct radv_cmd_buffer *cmd_buffer,
+                                  VkDescriptorType descriptor_type, unsigned *dst,
+                                  struct radeon_winsys_bo **buffer_list, const VkDescriptorBufferInfo *buffer_info)
 {
    VK_FROM_HANDLE(radv_buffer, buffer, buffer_info->buffer);
    uint64_t va = 0, range = 0;
@@ -83,10 +100,27 @@ radv_write_buffer_descriptor_impl(struct radv_device *device, VkDescriptorType d
    }
 
    radv_write_buffer_descriptor(device, descriptor_type, dst, va, range);
+
+   if (device->use_global_bo_list)
+      return;
+
+   if (!buffer) {
+      if (!cmd_buffer)
+         *buffer_list = NULL;
+      return;
+   }
+
+   if (cmd_buffer) {
+      struct radv_cmd_stream *cs = cmd_buffer->cs;
+      radv_cs_add_buffer(device->ws, cs->b, buffer->bo);
+   } else {
+      *buffer_list = buffer->bo;
+   }
 }
 
 static ALWAYS_INLINE void
-radv_write_block_descriptor(void *dst, const VkWriteDescriptorSet *writeset)
+radv_write_block_descriptor(struct radv_device *device, struct radv_cmd_buffer *cmd_buffer, void *dst,
+                            const VkWriteDescriptorSet *writeset)
 {
    const VkWriteDescriptorSetInlineUniformBlock *inline_ub =
       vk_find_struct_const(writeset->pNext, WRITE_DESCRIPTOR_SET_INLINE_UNIFORM_BLOCK);
@@ -95,13 +129,15 @@ radv_write_block_descriptor(void *dst, const VkWriteDescriptorSet *writeset)
 }
 
 static ALWAYS_INLINE void
-radv_write_dynamic_buffer_descriptor(struct radv_descriptor_range *range, const VkDescriptorBufferInfo *buffer_info)
+radv_write_dynamic_buffer_descriptor(struct radv_device *device, struct radv_descriptor_range *range,
+                                     struct radeon_winsys_bo **buffer_list, const VkDescriptorBufferInfo *buffer_info)
 {
    VK_FROM_HANDLE(radv_buffer, buffer, buffer_info->buffer);
    unsigned size;
 
    if (!buffer) {
       range->va = 0;
+      *buffer_list = NULL;
       return;
    }
 
@@ -116,6 +152,8 @@ radv_write_dynamic_buffer_descriptor(struct radv_descriptor_range *range, const 
 
    range->va = vk_buffer_address(&buffer->vk, buffer_info->offset);
    range->size = size;
+
+   *buffer_list = buffer->bo;
 }
 
 static ALWAYS_INLINE void
@@ -154,6 +192,37 @@ radv_write_image_descriptor(unsigned *dst, unsigned size, VkDescriptorType descr
 }
 
 static ALWAYS_INLINE void
+radv_write_image_descriptor_impl(struct radv_device *device, struct radv_cmd_buffer *cmd_buffer, unsigned size,
+                                 unsigned *dst, struct radeon_winsys_bo **buffer_list, VkDescriptorType descriptor_type,
+                                 const VkDescriptorImageInfo *image_info)
+{
+   VK_FROM_HANDLE(radv_image_view, iview, image_info->imageView);
+
+   radv_write_image_descriptor(dst, size, descriptor_type, image_info);
+
+   if (device->use_global_bo_list)
+      return;
+
+   if (!iview) {
+      if (!cmd_buffer)
+         *buffer_list = NULL;
+      return;
+   }
+
+   const uint32_t max_bindings = sizeof(iview->image->bindings) / sizeof(iview->image->bindings[0]);
+   for (uint32_t b = 0; b < max_bindings; b++) {
+      if (cmd_buffer) {
+         struct radv_cmd_stream *cs = cmd_buffer->cs;
+         if (iview->image->bindings[b].bo)
+            radv_cs_add_buffer(device->ws, cs->b, iview->image->bindings[b].bo);
+      } else {
+         *buffer_list = iview->image->bindings[b].bo;
+         buffer_list++;
+      }
+   }
+}
+
+static ALWAYS_INLINE void
 radv_write_image_descriptor_ycbcr(struct radv_device *device, unsigned *dst, const VkDescriptorImageInfo *image_info,
                                   bool use_combined_image_sampler)
 {
@@ -181,6 +250,36 @@ radv_write_image_descriptor_ycbcr(struct radv_device *device, unsigned *dst, con
 }
 
 static ALWAYS_INLINE void
+radv_write_image_descriptor_ycbcr_impl(struct radv_device *device, struct radv_cmd_buffer *cmd_buffer, unsigned *dst,
+                                       struct radeon_winsys_bo **buffer_list, const VkDescriptorImageInfo *image_info,
+                                       bool use_combined_image_sampler)
+{
+   VK_FROM_HANDLE(radv_image_view, iview, image_info->imageView);
+
+   radv_write_image_descriptor_ycbcr(device, dst, image_info, use_combined_image_sampler);
+
+   if (device->use_global_bo_list)
+      return;
+
+   if (!iview) {
+      if (!cmd_buffer)
+         *buffer_list = NULL;
+      return;
+   }
+
+   for (uint32_t b = 0; b < ARRAY_SIZE(iview->image->bindings); b++) {
+      if (cmd_buffer) {
+         struct radv_cmd_stream *cs = cmd_buffer->cs;
+         if (iview->image->bindings[b].bo)
+            radv_cs_add_buffer(device->ws, cs->b, iview->image->bindings[b].bo);
+      } else {
+         *buffer_list = iview->image->bindings[b].bo;
+         buffer_list++;
+      }
+   }
+}
+
+static ALWAYS_INLINE void
 radv_write_sampler_descriptor(unsigned *dst, VkSampler _sampler)
 {
    VK_FROM_HANDLE(radv_sampler, sampler, _sampler);
@@ -188,14 +287,15 @@ radv_write_sampler_descriptor(unsigned *dst, VkSampler _sampler)
 }
 
 static ALWAYS_INLINE void
-radv_write_combined_image_sampler_descriptor(struct radv_device *device, unsigned *dst,
+radv_write_combined_image_sampler_descriptor(struct radv_device *device, struct radv_cmd_buffer *cmd_buffer,
+                                             unsigned *dst, struct radeon_winsys_bo **buffer_list,
                                              VkDescriptorType descriptor_type, const VkDescriptorImageInfo *image_info,
                                              bool has_sampler)
 {
    const struct radv_physical_device *pdev = radv_device_physical(device);
    const uint32_t desc_size = radv_get_sampled_image_desc_size(pdev);
 
-   radv_write_image_descriptor(dst, desc_size, descriptor_type, image_info);
+   radv_write_image_descriptor_impl(device, cmd_buffer, desc_size, dst, buffer_list, descriptor_type, image_info);
    /* copy over sampler state */
    if (has_sampler) {
       const uint32_t sampler_offset = radv_get_combined_image_sampler_offset(pdev);

@@ -60,7 +60,8 @@ radv_free_memory(struct radv_device *device, const VkAllocationCallbacks *pAlloc
          mtx_unlock(&device->overallocation_mutex);
       }
 
-      device->ws->buffer_make_resident(device->ws, mem->bo, false);
+      if (device->use_global_bo_list)
+         device->ws->buffer_make_resident(device->ws, mem->bo, false);
       radv_bo_destroy(device, &mem->base, mem->bo);
       mem->bo = NULL;
    }
@@ -225,7 +226,9 @@ radv_alloc_memory(struct radv_device *device, const VkMemoryAllocateInfo *pAlloc
             flags |= RADEON_FLAG_GTT_WC;
       } else if (!import_info) {
          /* neither export nor import */
-         flags |= RADEON_FLAG_NO_INTERPROCESS_SHARING | RADEON_FLAG_PREFER_LOCAL_BO;
+         flags |= RADEON_FLAG_NO_INTERPROCESS_SHARING;
+         if (device->use_global_bo_list)
+            flags |= RADEON_FLAG_PREFER_LOCAL_BO;
       }
 
       if (flags_info && flags_info->flags & VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT)
@@ -304,9 +307,11 @@ radv_alloc_memory(struct radv_device *device, const VkMemoryAllocateInfo *pAlloc
    }
 
    if (!wsi_info) {
-      result = device->ws->buffer_make_resident(device->ws, mem->bo, true);
-      if (result != VK_SUCCESS)
-         goto fail;
+      if (device->use_global_bo_list) {
+         result = device->ws->buffer_make_resident(device->ws, mem->bo, true);
+         if (result != VK_SUCCESS)
+            goto fail;
+      }
    }
 
    *pMem = radv_device_memory_to_handle(mem);

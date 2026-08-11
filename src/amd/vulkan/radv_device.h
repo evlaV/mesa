@@ -317,6 +317,8 @@ struct radv_device {
    struct radv_address_binding_tracker *addr_binding_tracker;
 
    struct radv_compiler_info compiler_info;
+
+   bool use_global_bo_list;
 };
 
 VK_DEFINE_HANDLE_CASTS(radv_device, vk.base, VkDevice, VK_OBJECT_TYPE_DEVICE)

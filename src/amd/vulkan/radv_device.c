@@ -1425,6 +1425,8 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
    /* VM_ALWAYS_VALID must be supported. */
    assert(pdev->info.has_vm_always_valid);
 
+   device->use_global_bo_list = true;
+
    device->overallocation_disallowed = overallocation_disallowed;
    mtx_init(&device->overallocation_mutex, mtx_plain);
 
