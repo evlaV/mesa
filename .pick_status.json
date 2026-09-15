@@ -28354,7 +28354,7 @@
         "description": "nir: Handle unaligned base in lower_mem_access_bit_sizes",
         "nominated": true,
         "nomination_type": 2,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "c11ac5e4462c5aceb35958858f6cef93d142c7de",
         "notes": null
