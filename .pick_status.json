@@ -28344,7 +28344,7 @@
         "description": "nak: Only use copy for cbuf loads of >= 32 bits",
         "nominated": true,
         "nomination_type": 2,
-        "resolution": 0,
+        "resolution": 1,
         "main_sha": null,
         "because_sha": "0ff7fbf093f27f05994ef84bcb9bf6c5c714382a",
         "notes": null
