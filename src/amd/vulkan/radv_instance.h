@@ -62,6 +62,7 @@ struct radv_drirc {
       bool hide_rebar_on_dgpu;
       bool force_64_byte_sampled_image;
       bool force_nan_preserve_min_max;
+      bool disable_binning_gfx11;
       char *app_layer;
       int override_uniform_offset_alignment;
    } debug;

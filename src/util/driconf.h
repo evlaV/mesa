@@ -862,6 +862,10 @@
    DRI_CONF_OPT_B(radv_disable_global_bo_list, def, \
                   "Disable the global BO list for apps that don't require it.")
 
+#define DRI_CONF_RADV_DISABLE_BINNING_GFX11(def) \
+   DRI_CONF_OPT_B(radv_disable_binning_gfx11, def, \
+                  "Disable primitive binning on GFX11 to workaround a hw bug.")
+
 /**
  * \brief ANV specific configuration options
  */
