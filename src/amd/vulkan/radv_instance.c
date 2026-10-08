@@ -301,6 +301,7 @@ radv_init_dri_performance_options(struct radv_instance *instance)
    drirc->performance.prefer_2d_swizzle_for_3d_storage =
       driQueryOptionb(&drirc->options, "radv_prefer_2d_swizzle_for_3d_storage");
    drirc->performance.disable_global_bo_list = driQueryOptionb(&drirc->options, "radv_disable_global_bo_list");
+   drirc->performance.disable_global_bo_list = false;
 }
 
 static void
