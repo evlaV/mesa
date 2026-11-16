@@ -311,26 +311,31 @@ radv_bo_destroy(struct radv_device *device, struct vk_object_base *object, struc
 }
 
 VkResult
-radv_bo_virtual_bind(struct radv_device *device, struct vk_object_base *object, struct radeon_winsys_bo *parent,
-                     uint64_t offset, uint64_t size, struct radeon_winsys_bo *bo, uint64_t bo_offset, uint32_t wait_count,
-                     const struct vk_sync_wait *waits)
+radv_bo_virtual_bind(struct radv_device *device, uint32_t bind_count,
+                     struct radv_winsys_virtual_bind_info *bind_infos, uint32_t wait_count,
+                     const struct vk_sync_wait *waits, uint32_t signal_count, const struct vk_sync_signal *signals)
 {
    struct radv_physical_device *pdev = radv_device_physical(device);
    struct radv_instance *instance = radv_physical_device_instance(pdev);
    struct radeon_winsys *ws = device->ws;
    VkResult result;
 
-   result = ws->buffer_virtual_bind(ws, parent, offset, size, bo, bo_offset, wait_count, waits);
-   if (result != VK_SUCCESS)
-      return result;
+   for (uint32_t i = 0; i < bind_count; ++i) {
+      result = ws->buffer_virtual_bind(ws, bind_infos[i].parent, bind_infos[i].offset, bind_infos[i].size,
+                                       bind_infos[i].bo, bind_infos[i].bo_offset, wait_count, waits);
+      if (result != VK_SUCCESS)
+         return i ? vk_device_set_lost(&device->vk, "Sparse binding operation partially failed") : result;
 
-   if (bo)
-      radv_rmv_log_sparse_add_residency(device, parent, offset);
-   else
-      radv_rmv_log_sparse_remove_residency(device, parent, offset);
+      if (bind_infos[i].bo)
+         radv_rmv_log_sparse_add_residency(device, bind_infos[i].parent, bind_infos[i].offset);
+      else
+         radv_rmv_log_sparse_remove_residency(device, bind_infos[i].parent, bind_infos[i].offset);
 
-   vk_address_binding_report(&instance->vk, object, radv_buffer_get_va(parent) + offset, size,
-                             bo ? VK_DEVICE_ADDRESS_BINDING_TYPE_BIND_EXT : VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT);
+      vk_address_binding_report(
+         &instance->vk, (struct vk_object_base *)bind_infos[i].private,
+         radv_buffer_get_va(bind_infos[i].parent) + bind_infos[i].offset, bind_infos[i].size,
+         bind_infos[i].bo ? VK_DEVICE_ADDRESS_BINDING_TYPE_BIND_EXT : VK_DEVICE_ADDRESS_BINDING_TYPE_UNBIND_EXT);
+   }
 
    return VK_SUCCESS;
 }

@@ -34,12 +34,10 @@ radv_get_queue_global_priority(const VkDeviceQueueGlobalPriorityCreateInfo *pObj
    return vk_to_radeon_priority(pObj->globalPriority);
 }
 
-static VkResult
-radv_sparse_buffer_bind_memory(struct radv_device *device, const VkSparseBufferMemoryBindInfo *bind, uint32_t wait_count,
-                               const struct vk_sync_wait *waits)
+static void
+radv_sparse_buffer_bind_memory(struct radv_device *device, const VkSparseBufferMemoryBindInfo *bind, struct util_dynarray *dst_ops)
 {
    VK_FROM_HANDLE(radv_buffer, buffer, bind->buffer);
-   VkResult result = VK_SUCCESS;
 
    struct radv_device_memory *mem = NULL;
    VkDeviceSize resourceOffset = 0;
@@ -65,10 +63,15 @@ radv_sparse_buffer_bind_memory(struct radv_device *device, const VkSparseBufferM
          }
       }
       if (size) {
-         result = radv_bo_virtual_bind(device, &buffer->vk.base, buffer->bo, resourceOffset, size, mem ? mem->bo : NULL,
-                                       memoryOffset, wait_count, waits);
-         if (result != VK_SUCCESS)
-            return result;
+         struct radv_winsys_virtual_bind_info bind_info = {
+            .parent = buffer->bo,
+            .bo = mem ? mem->bo : NULL,
+            .offset = resourceOffset,
+            .size = size,
+            .bo_offset = memoryOffset,
+            .private = &buffer->vk.base,
+         };
+         util_dynarray_append_typed(dst_ops, struct radv_winsys_virtual_bind_info, bind_info);
       }
       mem = cur_mem;
       resourceOffset = bind->pBinds[i].resourceOffset;
@@ -76,19 +79,22 @@ radv_sparse_buffer_bind_memory(struct radv_device *device, const VkSparseBufferM
       memoryOffset = bind->pBinds[i].memoryOffset;
    }
    if (size) {
-      result = radv_bo_virtual_bind(device, &buffer->vk.base, buffer->bo, resourceOffset, size, mem ? mem->bo : NULL,
-                                    memoryOffset, wait_count, waits);
+      struct radv_winsys_virtual_bind_info bind_info = {
+         .parent = buffer->bo,
+         .bo = mem ? mem->bo : NULL,
+         .offset = resourceOffset,
+         .size = size,
+         .bo_offset = memoryOffset,
+         .private = &buffer->vk.base,
+      };
+      util_dynarray_append_typed(dst_ops, struct radv_winsys_virtual_bind_info, bind_info);
    }
-
-   return result;
 }
 
-static VkResult
-radv_sparse_image_opaque_bind_memory(struct radv_device *device, const VkSparseImageOpaqueMemoryBindInfo *bind, uint32_t wait_count,
-                                     const struct vk_sync_wait *waits)
+static void
+radv_sparse_image_opaque_bind_memory(struct radv_device *device, const VkSparseImageOpaqueMemoryBindInfo *bind, struct util_dynarray *dst_ops)
 {
    VK_FROM_HANDLE(radv_image, image, bind->image);
-   VkResult result;
 
    for (uint32_t i = 0; i < bind->bindCount; ++i) {
       struct radv_device_memory *mem = NULL;
@@ -96,18 +102,20 @@ radv_sparse_image_opaque_bind_memory(struct radv_device *device, const VkSparseI
       if (bind->pBinds[i].memory != VK_NULL_HANDLE)
          mem = radv_device_memory_from_handle(bind->pBinds[i].memory);
 
-      result = radv_bo_virtual_bind(device, &image->vk.base, image->bindings[0].bo, bind->pBinds[i].resourceOffset,
-                                    bind->pBinds[i].size, mem ? mem->bo : NULL, bind->pBinds[i].memoryOffset, wait_count, waits);
-      if (result != VK_SUCCESS)
-         return result;
+      struct radv_winsys_virtual_bind_info bind_info = {
+         .parent = image->bindings[0].bo,
+         .bo = mem ? mem->bo : NULL,
+         .offset = bind->pBinds[i].resourceOffset,
+         .size = bind->pBinds[i].size,
+         .bo_offset = bind->pBinds[i].memoryOffset,
+         .private = &image->vk.base,
+      };
+      util_dynarray_append_typed(dst_ops, struct radv_winsys_virtual_bind_info, bind_info);
    }
-
-   return VK_SUCCESS;
 }
 
-static VkResult
-radv_sparse_image_bind_memory(struct radv_device *device, const VkSparseImageMemoryBindInfo *bind, uint32_t wait_count,
-                              const struct vk_sync_wait *waits)
+static void
+radv_sparse_image_bind_memory(struct radv_device *device, const VkSparseImageMemoryBindInfo *bind, struct util_dynarray *dst_ops)
 {
    VK_FROM_HANDLE(radv_image, image, bind->image);
    const struct radv_physical_device *pdev = radv_device_physical(device);
@@ -159,10 +167,15 @@ radv_sparse_image_bind_memory(struct radv_device *device, const VkSparseImageMem
 
       if (whole_subres) {
          uint64_t size = (uint64_t)aligned_extent_width * aligned_extent_height * aligned_extent_depth * bs;
-         result = radv_bo_virtual_bind(device, &image->vk.base, image->bindings[0].bo, offset, size,
-                                       mem ? mem->bo : NULL, mem_offset, wait_count, waits);
-         if (result != VK_SUCCESS)
-            return result;
+         struct radv_winsys_virtual_bind_info bind_info = {
+            .parent = image->bindings[0].bo,
+            .bo = mem ? mem->bo : NULL,
+            .offset = offset,
+            .size = size,
+            .bo_offset = mem_offset,
+            .private = &image->vk.base,
+         };
+         util_dynarray_append_typed(dst_ops, struct radv_winsys_virtual_bind_info, bind_info);
       } else {
          uint32_t img_y_increment = pitch * bs * surface->prt_tile_depth;
          uint32_t mem_y_increment = aligned_extent_width * bs * surface->prt_tile_depth;
@@ -173,45 +186,38 @@ radv_sparse_image_bind_memory(struct radv_device *device, const VkSparseImageMem
             for (unsigned y = 0; y < bind_extent.height; y += surface->prt_tile_height) {
                uint64_t bo_offset = offset + (uint64_t)img_y_increment * y;
 
-               result = radv_bo_virtual_bind(device, &image->vk.base, image->bindings[0].bo, bo_offset, size,
-                                             mem ? mem->bo : NULL,
-                                             mem_offset + (uint64_t)mem_y_increment * y + mem_z_increment * z,
-                                             wait_count, waits);
-               if (result != VK_SUCCESS)
-                  return result;
+               struct radv_winsys_virtual_bind_info bind_info = {
+                  .parent = image->bindings[0].bo,
+                  .bo = mem ? mem->bo : NULL,
+                  .offset = bo_offset,
+                  .size = size,
+                  .bo_offset = mem_offset + (uint64_t)mem_y_increment * y + mem_z_increment * z,
+                  .private = &image->vk.base,
+               };
+               util_dynarray_append_typed(dst_ops, struct radv_winsys_virtual_bind_info, bind_info);
             }
          }
       }
    }
-
-   return VK_SUCCESS;
 }
 
 static VkResult
 radv_queue_submit_bind_sparse_memory(struct radv_device *device, struct vk_queue_submit *submission)
 {
-   for (uint32_t i = 0; i < submission->buffer_bind_count; ++i) {
-      VkResult result = radv_sparse_buffer_bind_memory(device, submission->buffer_binds + i,
-                                                       submission->wait_count, submission->waits);
-      if (result != VK_SUCCESS)
-         return result;
-   }
+   struct util_dynarray binds = UTIL_DYNARRAY_INIT;
 
-   for (uint32_t i = 0; i < submission->image_opaque_bind_count; ++i) {
-      VkResult result = radv_sparse_image_opaque_bind_memory(device, submission->image_opaque_binds + i,
-                                                             submission->wait_count, submission->waits);
-      if (result != VK_SUCCESS)
-         return result;
-   }
+   for (uint32_t i = 0; i < submission->buffer_bind_count; ++i)
+      radv_sparse_buffer_bind_memory(device, submission->buffer_binds + i, &binds);
 
-   for (uint32_t i = 0; i < submission->image_bind_count; ++i) {
-      VkResult result = radv_sparse_image_bind_memory(device, submission->image_binds + i,
-                                                      submission->wait_count, submission->waits);
-      if (result != VK_SUCCESS)
-         return result;
-   }
+   for (uint32_t i = 0; i < submission->image_opaque_bind_count; ++i)
+      radv_sparse_image_opaque_bind_memory(device, submission->image_opaque_binds + i, &binds);
 
-   return VK_SUCCESS;
+   for (uint32_t i = 0; i < submission->image_bind_count; ++i)
+      radv_sparse_image_bind_memory(device, submission->image_binds + i, &binds);
+
+   return radv_bo_virtual_bind(device, util_dynarray_num_elements(&binds, struct radv_winsys_virtual_bind_info),
+                               binds.data, submission->wait_count, submission->waits, submission->signal_count,
+                               submission->signals);
 }
 
 static VkResult
