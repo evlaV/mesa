@@ -440,6 +440,7 @@ radv_amdgpu_winsys_bo_virtual_bind_many(struct radeon_winsys *_ws, uint32_t bind
 
                mappings[emulated_mapping_index] = mappings[i];
                mappings[emulated_mapping_index].va = low_va + binds[i].offset + offset;
+               mappings[emulated_mapping_index].map_size = chunk_size;
                mappings[emulated_mapping_index].flags = 0;
                mappings[emulated_mapping_index].handle = radv_amdgpu_winsys_bo(ws->null_prt_bug.bo)->bo_handle;
 
