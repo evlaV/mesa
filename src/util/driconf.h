@@ -866,6 +866,10 @@
    DRI_CONF_OPT_B(radv_disable_binning_gfx11, def, \
                   "Disable primitive binning on GFX11 to workaround a hw bug.")
 
+#define DRI_CONF_RADV_DISABLE_DCC_AC01_CLEARS_GFX11(def) \
+   DRI_CONF_OPT_B(radv_disable_dcc_ac01_clears_gfx11, def, \
+                  "Disable DCC AC01 clears to workaround a hw bug with a CB condition race on GFX11.")
+
 /**
  * \brief ANV specific configuration options
  */

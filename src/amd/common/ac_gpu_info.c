@@ -1005,6 +1005,15 @@ void ac_fill_bug_info(struct radeon_info *info)
    info->never_stop_sq_perf_counters = info->gfx_level == GFX10 ||
                                        info->gfx_level == GFX10_3;
    info->never_send_perfcounter_stop = info->gfx_level == GFX11;
+
+   /* GFX11 and STRIX1 are affected by a DCC clear issue with AC01 codes
+    * which causes flickering. The workaround is to not fast clear using
+    * these codes and use comp-to-single if possible or a slow clear.
+    *
+    * See disableAc01 in PAL.
+    */
+   info->has_dcc_ac01_clear_bug = info->gfx_level == GFX11 ||
+                                  info->family == CHIP_STRIX1;
 }
 
 void ac_fill_feature_info(struct radeon_info *info, const struct drm_amdgpu_info_device *device_info)

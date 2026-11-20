@@ -14950,7 +14950,8 @@ radv_init_color_image_metadata(struct radv_cmd_buffer *cmd_buffer, struct radv_i
    if (radv_dcc_enabled(image, range->baseMipLevel)) {
       dcc_init_value = DCC_UNCOMPRESSED; /* Fully expanded mode. */
 
-      if (radv_layout_dcc_compressed(device, image, range->baseMipLevel, dst_layout, dst_queue_mask)) {
+      if (!device->disable_dcc_ac01_clears &&
+          radv_layout_dcc_compressed(device, image, range->baseMipLevel, dst_layout, dst_queue_mask)) {
          dcc_init_value = DCC_CLEAR_0000;
       }
 

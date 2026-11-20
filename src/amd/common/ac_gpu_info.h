@@ -298,6 +298,8 @@ struct radeon_info {
                              * the LLVM version doesn't work with multiparts shaders.
                              */
 
+   bool has_dcc_ac01_clear_bug;
+
    /* Display features. */
    /* There are 2 display DCC codepaths, because display expects unaligned DCC. */
    /* Disable RB and pipe alignment to skip the retile blit. (1 RB chips only) */

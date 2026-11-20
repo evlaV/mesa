@@ -1268,41 +1268,43 @@ gfx11_get_fast_clear_parameters(struct radv_device *device, const struct radv_im
          all_words_are_fp32_1 &= value.ui[i] == 0x3f800000;
    }
 
-   if (all_bits_are_0 || all_bits_are_1 || all_words_are_fp16_1 || all_words_are_fp32_1) {
-      if (all_bits_are_0)
-         *reset_value = DCC_CLEAR_0000;
-      else if (all_bits_are_1)
-         *reset_value = GFX11_DCC_CLEAR_1111_UNORM;
-      else if (all_words_are_fp16_1)
-         *reset_value = GFX11_DCC_CLEAR_1111_FP16;
-      else if (all_words_are_fp32_1)
-         *reset_value = GFX11_DCC_CLEAR_1111_FP32;
-      return true;
-   }
+   if (!device->disable_dcc_ac01_clears) {
+      if (all_bits_are_0 || all_bits_are_1 || all_words_are_fp16_1 || all_words_are_fp32_1) {
+         if (all_bits_are_0)
+            *reset_value = DCC_CLEAR_0000;
+         else if (all_bits_are_1)
+            *reset_value = GFX11_DCC_CLEAR_1111_UNORM;
+         else if (all_words_are_fp16_1)
+            *reset_value = GFX11_DCC_CLEAR_1111_FP16;
+         else if (all_words_are_fp32_1)
+            *reset_value = GFX11_DCC_CLEAR_1111_FP32;
+         return true;
+      }
 
-   if (desc->nr_channels == 2 && desc->channel[0].size == 8) {
-      if (value.ub[0] == 0x00 && value.ub[1] == 0xff) {
-         *reset_value = GFX11_DCC_CLEAR_0001_UNORM;
-         return true;
-      } else if (value.ub[0] == 0xff && value.ub[1] == 0x00) {
-         *reset_value = GFX11_DCC_CLEAR_1110_UNORM;
-         return true;
-      }
-   } else if (desc->nr_channels == 4 && desc->channel[0].size == 8) {
-      if (value.ub[0] == 0x00 && value.ub[1] == 0x00 && value.ub[2] == 0x00 && value.ub[3] == 0xff) {
-         *reset_value = GFX11_DCC_CLEAR_0001_UNORM;
-         return true;
-      } else if (value.ub[0] == 0xff && value.ub[1] == 0xff && value.ub[2] == 0xff && value.ub[3] == 0x00) {
-         *reset_value = GFX11_DCC_CLEAR_1110_UNORM;
-         return true;
-      }
-   } else if (desc->nr_channels == 4 && desc->channel[0].size == 16) {
-      if (value.us[0] == 0x0000 && value.us[1] == 0x0000 && value.us[2] == 0x0000 && value.us[3] == 0xffff) {
-         *reset_value = GFX11_DCC_CLEAR_0001_UNORM;
-         return true;
-      } else if (value.us[0] == 0xffff && value.us[1] == 0xffff && value.us[2] == 0xffff && value.us[3] == 0x0000) {
-         *reset_value = GFX11_DCC_CLEAR_1110_UNORM;
-         return true;
+      if (desc->nr_channels == 2 && desc->channel[0].size == 8) {
+         if (value.ub[0] == 0x00 && value.ub[1] == 0xff) {
+            *reset_value = GFX11_DCC_CLEAR_0001_UNORM;
+            return true;
+         } else if (value.ub[0] == 0xff && value.ub[1] == 0x00) {
+            *reset_value = GFX11_DCC_CLEAR_1110_UNORM;
+            return true;
+         }
+      } else if (desc->nr_channels == 4 && desc->channel[0].size == 8) {
+         if (value.ub[0] == 0x00 && value.ub[1] == 0x00 && value.ub[2] == 0x00 && value.ub[3] == 0xff) {
+            *reset_value = GFX11_DCC_CLEAR_0001_UNORM;
+            return true;
+         } else if (value.ub[0] == 0xff && value.ub[1] == 0xff && value.ub[2] == 0xff && value.ub[3] == 0x00) {
+            *reset_value = GFX11_DCC_CLEAR_1110_UNORM;
+            return true;
+         }
+      } else if (desc->nr_channels == 4 && desc->channel[0].size == 16) {
+         if (value.us[0] == 0x0000 && value.us[1] == 0x0000 && value.us[2] == 0x0000 && value.us[3] == 0xffff) {
+            *reset_value = GFX11_DCC_CLEAR_0001_UNORM;
+            return true;
+         } else if (value.us[0] == 0xffff && value.us[1] == 0xffff && value.us[2] == 0xffff && value.us[3] == 0x0000) {
+            *reset_value = GFX11_DCC_CLEAR_1110_UNORM;
+            return true;
+         }
       }
    }
 

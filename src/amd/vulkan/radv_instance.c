@@ -238,6 +238,7 @@ static const driOptionDescription radv_dri_options[] = {
       DRI_CONF_RADV_FORCE_NAN_PRESERVE_MIN_MAX(false)
       DRI_CONF_RADV_DISABLE_GLOBAL_BO_LIST(false)
       DRI_CONF_RADV_DISABLE_BINNING_GFX11(false)
+      DRI_CONF_RADV_DISABLE_DCC_AC01_CLEARS_GFX11(false)
    DRI_CONF_SECTION_END
 };
 // clang-format on
@@ -286,6 +287,7 @@ radv_init_dri_debug_options(struct radv_instance *instance)
    drirc->debug.force_64_byte_sampled_image = driQueryOptionb(&drirc->options, "radv_force_64_byte_sampled_image");
    drirc->debug.force_nan_preserve_min_max = driQueryOptionb(&drirc->options, "radv_force_nan_preserve_min_max");
    drirc->debug.disable_binning_gfx11 = driQueryOptionb(&drirc->options, "radv_disable_binning_gfx11");
+   drirc->debug.disable_dcc_ac01_clears_gfx11 = driQueryOptionb(&drirc->options, "radv_disable_dcc_ac01_clears_gfx11");
 }
 
 static void

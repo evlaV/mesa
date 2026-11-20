@@ -63,6 +63,7 @@ struct radv_drirc {
       bool force_64_byte_sampled_image;
       bool force_nan_preserve_min_max;
       bool disable_binning_gfx11;
+      bool disable_dcc_ac01_clears_gfx11;
       char *app_layer;
       int override_uniform_offset_alignment;
    } debug;

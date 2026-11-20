@@ -151,6 +151,8 @@ struct radv_device {
    uint32_t dispatch_initiator;
    uint32_t dispatch_initiator_task;
 
+   bool disable_dcc_ac01_clears;
+
    /* MSAA sample locations.
     * The first index is the sample index.
     * The second index is the coordinate: X, Y. */
