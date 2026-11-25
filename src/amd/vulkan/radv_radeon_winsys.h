@@ -175,15 +175,6 @@ struct radeon_winsys_bo {
    uint64_t obj_id;
 };
 
-struct radv_winsys_virtual_bind_info {
-   struct radeon_winsys_bo *parent;
-   uint64_t offset;
-   uint64_t size;
-   struct radeon_winsys_bo *bo;
-   uint64_t bo_offset;
-   void *private;
-};
-
 struct radv_winsys_submit_info {
    enum amd_ip_type ip_type;
    int queue_index;
@@ -273,11 +264,6 @@ struct radeon_winsys {
    VkResult (*buffer_virtual_bind)(struct radeon_winsys *ws, struct radeon_winsys_bo *parent, uint64_t offset,
                                    uint64_t size, struct radeon_winsys_bo *bo, uint64_t bo_offset, uint32_t wait_count,
                                    const struct vk_sync_wait *waits);
-
-   VkResult (*buffer_virtual_bind_many)(struct radeon_winsys *ws, uint32_t bind_count,
-                                        struct radv_winsys_virtual_bind_info *binds, uint32_t wait_count,
-                                        const struct vk_sync_wait *waits, uint32_t signal_count,
-                                        const struct vk_sync_signal *signal);
 
    VkResult (*buffer_make_resident)(struct radeon_winsys *ws, struct radeon_winsys_bo *bo, bool resident);
 
