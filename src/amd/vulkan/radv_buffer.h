@@ -35,10 +35,10 @@ VkResult radv_bo_create(struct radv_device *device, struct vk_object_base *objec
                         enum radeon_bo_domain domain, enum radeon_bo_flag flags, unsigned priority, uint64_t address,
                         bool is_internal, struct radeon_winsys_bo **out_bo);
 
-VkResult radv_bo_virtual_bind(struct radv_device *device, uint32_t bind_count,
-                              struct radv_winsys_virtual_bind_info *bind_infos, uint32_t wait_count,
-                              const struct vk_sync_wait *waits, uint32_t signal_count,
-                              const struct vk_sync_signal *signals);
+VkResult radv_bo_virtual_bind(struct radv_device *device, struct vk_object_base *object,
+                              struct radeon_winsys_bo *parent, uint64_t offset, uint64_t size,
+                              struct radeon_winsys_bo *bo, uint64_t bo_offset, uint32_t wait_count,
+                              const struct vk_sync_wait *waits);
 
 void radv_bo_destroy(struct radv_device *device, struct vk_object_base *object, struct radeon_winsys_bo *bo);
 
