@@ -320,19 +320,11 @@ radv_bo_virtual_bind(struct radv_device *device, uint32_t bind_count,
    struct radeon_winsys *ws = device->ws;
    VkResult result;
 
-   if (pdev->info.has_explicit_sync_vm_ops) {
-      result = ws->buffer_virtual_bind_many(ws, bind_count, bind_infos, wait_count, waits, signal_count, signals);
-      if (result != VK_SUCCESS)
-         return result;
-   }
-
    for (uint32_t i = 0; i < bind_count; ++i) {
-      if (!pdev->info.has_explicit_sync_vm_ops) {
-         result = ws->buffer_virtual_bind(ws, bind_infos[i].parent, bind_infos[i].offset, bind_infos[i].size,
-                                          bind_infos[i].bo, bind_infos[i].bo_offset, wait_count, waits);
-         if (result != VK_SUCCESS)
-            return i ? vk_device_set_lost(&device->vk, "Sparse binding operation partially failed") : result;
-      }
+      result = ws->buffer_virtual_bind(ws, bind_infos[i].parent, bind_infos[i].offset, bind_infos[i].size,
+                                       bind_infos[i].bo, bind_infos[i].bo_offset, wait_count, waits);
+      if (result != VK_SUCCESS)
+         return i ? vk_device_set_lost(&device->vk, "Sparse binding operation partially failed") : result;
 
       if (bind_infos[i].bo)
          radv_rmv_log_sparse_add_residency(device, bind_infos[i].parent, bind_infos[i].offset);
