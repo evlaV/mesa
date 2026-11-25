@@ -1128,7 +1128,7 @@ void ac_fill_feature_info(struct radeon_info *info, const struct drm_amdgpu_info
    /* AMDGPU 3.59+ clears VRAM on allocations by default. */
    info->has_default_zerovram_support = info->drm_minor >= 59;
 
-   info->has_explicit_sync_vm_ops = info->drm_minor >= 66;
+   info->has_explicit_sync_vm_ops = info->drm_minor >= 65;
 
    info->has_image_opcodes = debug_get_bool_option("AMD_IMAGE_OPCODES",
                                                    info->has_graphics || info->family < CHIP_GFX940);
