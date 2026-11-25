@@ -291,27 +291,6 @@ int ac_drm_bo_va_op_raw2(ac_drm_device *dev, uint32_t bo_handle, uint64_t offset
 
    return r;
 }
-int ac_drm_bo_va2_op_raw(ac_drm_device *dev, uint32_t num_mappings, uint64_t mappings,
-                                  uint32_t num_in_syncobjs, uint64_t in_syncobjs, uint64_t in_syncobj_points,
-                                  uint32_t num_out_syncobjs, uint64_t out_syncobjs, uint64_t out_syncobj_points)
-{
-   struct drm_amdgpu_gem_va2 va;
-   int r;
-
-   memset(&va, 0, sizeof(va));
-   va.num_mappings = num_mappings;
-   va.mappings = mappings;
-   va.num_syncobjs_in = num_in_syncobjs;
-   va.syncobjs_in = in_syncobjs;
-   va.timeline_points_in = in_syncobj_points;
-   va.num_syncobjs_out = num_out_syncobjs;
-   va.syncobjs_out = out_syncobjs;
-   va.timeline_points_out = out_syncobj_points;
-
-   r = drm_ioctl_write(dev->fd, DRM_AMDGPU_GEM_VA2, &va, sizeof(va));
-
-   return r;
-}
 
 int ac_drm_cs_ctx_create2(ac_drm_device *dev, uint32_t priority, uint32_t *ctx_id)
 {

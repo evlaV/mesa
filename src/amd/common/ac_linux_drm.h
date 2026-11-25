@@ -373,9 +373,6 @@ MESAPROC int ac_drm_bo_va_op_raw2(ac_drm_device *dev, uint32_t bo_handle, uint64
                               uint32_t vm_timeline_syncobj_out, uint64_t vm_timeline_point,
                               uint64_t input_fence_syncobj_handles,
                               uint32_t num_syncobj_handles) TAIL;
-MESAPROC int ac_drm_bo_va2_op_raw(ac_drm_device *dev, uint32_t num_mappings, uint64_t mappings,
-                                  uint32_t num_in_syncobjs, uint64_t in_syncobjs, uint64_t in_syncobj_points,
-                                  uint32_t num_out_syncobjs, uint64_t out_syncobjs, uint64_t out_syncobj_points) TAIL;
 MESAPROC int ac_drm_cs_ctx_create2(ac_drm_device *dev, uint32_t priority, uint32_t *ctx_id) TAIL;
 MESAPROC int ac_drm_cs_ctx_free(ac_drm_device *dev, uint32_t ctx_id) TAIL;
 MESAPROC int ac_drm_cs_ctx_stable_pstate(ac_drm_device *dev, uint32_t ctx_id, uint32_t op,
